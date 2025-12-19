@@ -1,3 +1,4 @@
+import { ROOM_DATA } from "@/assets/data/room"
 import ExploreHeader from "@/components/ExploreHeader"
 import ListingBottomSheet from "@/components/ListingBottomSheet"
 import ListingMap from "@/components/ListingMap"
@@ -33,39 +34,8 @@ const HomePage = () => {
 		getRoomCondition: SearchOptions = {} as any
 	) => {
 		// const res = await RoomAPI.getRoom(getRoomCondition)
-		const res = {rooms: [{
-			_id: "1",
-			name: "Đình Lân",
-			summary: "Best seller",
-			transit: "transit",
-			house_rules: "house rules",
-			price: 110,
-			bookedDate: ['2025/1/2']},
-		{
-			_id: "1",
-			name: "Đình Lân",
-			summary: "Best seller",
-			transit: "transit",
-			house_rules: "house rules",
-			price: 120,
-			bookedDate: ['2025/1/2']},
-		{
-			_id: "1",
-			name: "Đình Lân",
-			summary: "Best seller",
-			transit: "transit",
-			house_rules: "house rules",
-			price: 130,
-			bookedDate: ['2025/1/2']},
-		{
-			_id: "1",
-			name: "Đình Lân",
-			summary: "Best seller",
-			transit: "transit",
-			house_rules: "house rules",
-			price: 140,
-			bookedDate: ['2025/1/2']}]}
-		updateHomestayList(res?.rooms || [])
+		// updateHomestayList(res?.rooms || [])
+		updateHomestayList(ROOM_DATA || [])
 	}
 
 	return (
@@ -73,7 +43,7 @@ const HomePage = () => {
 			<View
 				style={{
 					flex: 1,
-					marginTop: 150,
+					marginTop: 180,
 					backgroundColor: "#fff",
 				}}
 			>
