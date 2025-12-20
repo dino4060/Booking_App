@@ -1,5 +1,5 @@
-import { createQueryString } from "@/app/utils/utilFunction"
 import { SearchOptions } from "@/interface/SearchOptions"
+import { createQueryString } from "@/utils/utilFunction"
 import { axiosClient } from "./AxiosClient"
 
 export const RoomAPI = {
