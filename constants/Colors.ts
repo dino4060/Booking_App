@@ -4,4 +4,5 @@ export default {
 	dark: "#1A1A1A",
 	slate: "#1e293b",
 	light: "white",
+	white: "#FFFFFF",
 }

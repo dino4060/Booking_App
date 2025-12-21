@@ -1,22 +1,23 @@
 import Colors from "@/constants/Colors"
-import { defaultStyles } from "@/constants/Style"
 import { Room } from "@/interface/Room"
 import { Wishlist } from "@/interface/Wishlist"
 import { WishlistHandle } from "@/utils/Function"
 import { Ionicons } from "@expo/vector-icons"
 import AntDesign from "@expo/vector-icons/AntDesign"
-import {
-	BottomSheetFlatListMethods
+import BottomSheet, {
+	BottomSheetFlatList,
+	BottomSheetFlatListMethods,
 } from "@gorhom/bottom-sheet"
-import { Link, useFocusEffect } from "expo-router"
-import {
+import { Link, router, useFocusEffect } from "expo-router"
+import React, {
+	Fragment,
 	useCallback,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react"
 import {
-	FlatList,
 	ListRenderItem,
 	StyleSheet,
 	Text,
@@ -27,13 +28,17 @@ import Animated, {
 	FadeInRight,
 	FadeOutLeft,
 } from "react-native-reanimated"
+
 interface Props {
 	listings: any[]
 	// refresh: number
 	category: string
 }
 
-const Listings = ({ listings: items, category }: Props) => {
+const ListingContent = ({
+	listings: roomItems,
+	category,
+}: Props) => {
 	const listRef = useRef<BottomSheetFlatListMethods>(null)
 	const [loading, setLoading] = useState<boolean>(false)
 	const [listLove, setListLove] = useState<any>([])
@@ -79,7 +84,9 @@ const Listings = ({ listings: items, category }: Props) => {
 		setListLove(idList)
 	}
 
-	const renderRow: ListRenderItem<Room> = ({ item }) => (
+	const renderRoomItem: ListRenderItem<Room> = ({
+		item,
+	}) => (
 		<Link href={`/listing/${item._id}`} asChild>
 			<TouchableOpacity>
 				<Animated.View
@@ -92,7 +99,7 @@ const Listings = ({ listings: items, category }: Props) => {
 							uri:
 								item.thumbnail_urls?.[0] ||
 								"https://random.imagecdn.app/500/500",
-						}} // Provide an empty string as a fallback if thumbnail_url is null
+						}}
 						style={styles.image}
 					/>
 					<TouchableOpacity
@@ -146,19 +153,50 @@ const Listings = ({ listings: items, category }: Props) => {
 		</Link>
 	)
 
+	// xxx
+	// hooks
+	const sheetRef = useRef<BottomSheet>(null)
+
+	// variables
+	const data = useMemo(
+		() =>
+			Array(50)
+				.fill(0)
+				.map((_, index) => `index-${index}`),
+		[]
+	)
+	const snapPoints = useMemo(
+		() => ["10%", "50%", "95%"],
+		[]
+	)
+
 	return (
-		<View style={defaultStyles.container}>
-			<FlatList
-				renderItem={renderRow}
-				data={loading ? [] : items}
-				// ref={listRef}
+		<BottomSheet
+			index={1}
+			ref={sheetRef}
+			snapPoints={snapPoints}
+			enableDynamicSizing={false}
+		>
+			<BottomSheetFlatList
+				data={roomItems}
+				keyExtractor={(i: any) => i}
+				renderItem={renderRoomItem}
 				ListHeaderComponent={
-					<Text style={styles.info}>
-						{items.length} homes
-					</Text>
+					<Fragment>
+						<TouchableOpacity
+							onPress={() => router.push("/reels/page")}
+							style={styles.reelsButton}
+						>
+							<Text style={styles.reelsText}>Reels</Text>
+						</TouchableOpacity>
+
+						<Text style={styles.info}>
+							{roomItems.length} homes
+						</Text>
+					</Fragment>
 				}
 			/>
-		</View>
+		</BottomSheet>
 	)
 }
 
@@ -179,6 +217,29 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		marginTop: 4,
 	},
+	container: {
+		flex: 1,
+		backgroundColor: Colors.grey,
+	},
+	contentContainer: {
+		flex: 1,
+		padding: 36,
+		alignItems: "center",
+	},
+	reelsButton: {
+		paddingHorizontal: 10,
+		backgroundColor: Colors.primary,
+		width: 100,
+		borderTopRightRadius: 15,
+		borderBottomRightRadius: 15,
+		marginBottom: 20,
+	},
+	reelsText: {
+		textAlign: "center",
+		fontFamily: "damion",
+		color: Colors.white,
+		fontSize: 25,
+	},
 })
 
-export default Listings
+export default ListingContent
