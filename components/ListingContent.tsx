@@ -1,3 +1,4 @@
+import { AltPhoto } from "@/assets/data/api"
 import Colors from "@/constants/Colors"
 import { Room } from "@/interface/Room"
 import { Wishlist } from "@/interface/Wishlist"
@@ -96,14 +97,14 @@ const ListingContent = ({
 				>
 					<Animated.Image
 						source={{
-							uri:
-								item.thumbnail_urls?.[0] ||
-								"https://random.imagecdn.app/500/500",
+							uri: item.thumbnailUrls?.[0] || AltPhoto,
 						}}
 						style={styles.image}
 					/>
 					<TouchableOpacity
-						onPress={() => handleLoveButtonClick(item._id)}
+						onPress={() =>
+							handleLoveButtonClick(String(item._id))
+						}
 						style={{
 							position: "absolute",
 							right: 30,
@@ -140,13 +141,13 @@ const ListingContent = ({
 						</View>
 					</View>
 					<Text style={{ fontFamily: "mon" }}>
-						{item.room_type}
+						{item.roomType}
 					</Text>
 					<View style={{ flexDirection: "row", gap: 4 }}>
 						<Text style={{ fontFamily: "mon-sb" }}>
-							€ {item.price}
+							₫{item.price}
 						</Text>
-						<Text style={{ fontFamily: "mon" }}>night</Text>
+						<Text style={{ fontFamily: "mon" }}>1 đêm</Text>
 					</View>
 				</Animated.View>
 			</TouchableOpacity>
@@ -165,6 +166,15 @@ const ListingContent = ({
 				.map((_, index) => `index-${index}`),
 		[]
 	)
+	const renderItem = useCallback(
+		({ item }: any) => (
+			<View style={styles.itemContainer}>
+				<Text>{item}</Text>
+			</View>
+		),
+		[]
+	)
+
 	const snapPoints = useMemo(
 		() => ["10%", "50%", "95%"],
 		[]
@@ -179,7 +189,7 @@ const ListingContent = ({
 		>
 			<BottomSheetFlatList
 				data={roomItems}
-				keyExtractor={(i: any) => i}
+				keyExtractor={(i: any) => i._id}
 				renderItem={renderRoomItem}
 				ListHeaderComponent={
 					<Fragment>
@@ -239,6 +249,11 @@ const styles = StyleSheet.create({
 		fontFamily: "damion",
 		color: Colors.white,
 		fontSize: 25,
+	},
+	itemContainer: {
+		padding: 6,
+		margin: 6,
+		backgroundColor: "#eee",
 	},
 })
 

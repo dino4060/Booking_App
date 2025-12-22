@@ -1,4 +1,4 @@
-import { ROOM_DATA } from "@/assets/data/room"
+import { RoomAPI } from "@/api/RoomAPI"
 import ExploreHeader from "@/components/ExploreHeader"
 import ListingContent from "@/components/ListingContent"
 import ListingMap from "@/components/ListingMap"
@@ -34,9 +34,8 @@ const HomePage = () => {
 	const getInitialRoom = async (
 		roomQuery: SearchOptions = {} as any
 	) => {
-		// const res = await RoomAPI.getRoom(roomQuery)
-		// updateHomestayList(res?.rooms || [])
-		updateHomestayList(ROOM_DATA || [])
+		const res = await RoomAPI.getRoom(roomQuery)
+		if (res) updateHomestayList(res.data)
 	}
 
 	return (

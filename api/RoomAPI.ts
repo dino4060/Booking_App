@@ -1,24 +1,23 @@
+import { ApiRes } from "@/interface/API"
+import { Room } from "@/interface/Room"
 import { SearchOptions } from "@/interface/SearchOptions"
-import { createQueryString } from "@/utils/utilFunction"
 import { axiosClient } from "./AxiosClient"
+
+const ROOM_PUBLIC_API = "/api/public/rooms"
 
 export const RoomAPI = {
 	getRoom: async (
 		getRoomCondition: SearchOptions | null
 	) => {
 		try {
-			let queryString = "/room/getRoom?"
-			if (getRoomCondition) {
-				queryString += createQueryString(getRoomCondition)
-			}
-			console.log("queryString: ", queryString)
-			const res = await axiosClient.get(queryString)
-			console.log("res get room: ", res)
-			if (res.status === 200) return res.data
+			const res = await axiosClient.get(ROOM_PUBLIC_API)
+			if (res.data.success === false)
+				console.error(res.data.message)
+			console.log(res.data.data)
 
-			return null
+			return res.data as ApiRes<Room[]>
 		} catch (error) {
-			return null
+			console.error(error)
 		}
 	},
 	getRoomById: async (id: string) => {
