@@ -1,4 +1,4 @@
-import { AltPhoto } from "@/assets/data/api"
+import { HostAvatarUrl } from "@/assets/data/default"
 import Colors from "@/constants/Colors"
 import { Room } from "@/interface/Room"
 import { Wishlist } from "@/interface/Wishlist"
@@ -96,7 +96,7 @@ const ListingContent = ({
 				>
 					<Animated.Image
 						source={{
-							uri: item.thumbnailUrls?.[0] || AltPhoto,
+							uri: item.thumbnailUrls?.[0] || HostAvatarUrl,
 						}}
 						style={styles.image}
 					/>

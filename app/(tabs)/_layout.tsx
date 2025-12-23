@@ -16,7 +16,7 @@ const Layout = () => {
 			<Tabs.Screen
 				name='index'
 				options={{
-					tabBarLabel: "Explore",
+					tabBarLabel: "Khám phá",
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons
 							name='search-outline'
@@ -30,7 +30,7 @@ const Layout = () => {
 			<Tabs.Screen
 				name='wishlists'
 				options={{
-					tabBarLabel: "Wishlists",
+					tabBarLabel: "Yêu thích",
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons
 							name='heart-outline'
@@ -44,7 +44,7 @@ const Layout = () => {
 			<Tabs.Screen
 				name='trips'
 				options={{
-					tabBarLabel: "Trips",
+					tabBarLabel: "Chuyến đi",
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons
 							name='sparkles-outline'
@@ -72,7 +72,7 @@ const Layout = () => {
 			<Tabs.Screen
 				name='profile'
 				options={{
-					tabBarLabel: "Profile",
+					tabBarLabel: "Cá nhân",
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons
 							name='person-outline'

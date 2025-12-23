@@ -91,7 +91,7 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
 					>
 						{categories.map((item, index) => (
 							<TouchableOpacity
-								ref={(el) => (itemsRef.current[index] = el)}
+								ref={(el: any) => (itemsRef.current[index] = el)}
 								key={index}
 								style={
 									activeIndex === index

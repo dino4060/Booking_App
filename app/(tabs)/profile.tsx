@@ -1,8 +1,12 @@
 import { UserAPI } from "@/api/UserAPI"
+import { UserAvatarUrl } from "@/assets/data/default"
 import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
 import { deleteValueSecureStore } from "@/store/SecureStore"
-import { useUserStore } from "@/store/useUserStore"
+import {
+	DefaultUser,
+	useUserStore,
+} from "@/store/useUserStore"
 import { Ionicons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
 import { Link, Stack, router } from "expo-router"
@@ -20,16 +24,29 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { SafeAreaView } from "react-native-safe-area-context"
 const profile = () => {
 	const [edit, setEdit] = useState(false)
-	const [newUsername, setNewUsername] = useState("")
-	const [avatarUri, setAvatarUri] = useState(
-		"https://avatars.githubusercontent.com/u/92299727?s=96&v=4"
+	const [newUsername, setNewUsername] = useState(
+		"Default Username"
+	)
+	const [avatarUrl, setAvatarUrl] = useState(UserAvatarUrl)
+	const user = useUserStore((state) => state.user)
+	const saveUserStore = useUserStore(
+		(state) => state.updateUser
 	)
 
-	const user = useUserStore((state) => state.user)
+	useEffect(() => {
+		console.log(user)
+		if (user.avatarUrl) {
+			setAvatarUrl(user.avatarUrl)
+		}
+	}, [])
 
 	const handleLogout = async () => {
-		deleteValueSecureStore("email")
-		router.push("/(modals)/login")
+		// await deleteValueSecureStore("email")
+		await deleteValueSecureStore("token")
+		await deleteValueSecureStore("id")
+		await deleteValueSecureStore("password")
+		saveUserStore({ ...DefaultUser, name: user.name })
+		router.push("/")
 	}
 
 	const handleEdit = () => {
@@ -39,12 +56,6 @@ const profile = () => {
 		})
 		updateUserName(newUsername)
 	}
-	useEffect(() => {
-		console.log(user)
-		if (user.profile_image) {
-			setAvatarUri(user.profile_image)
-		}
-	}, [])
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -60,7 +71,7 @@ const profile = () => {
 			const name = result.assets[0].fileName
 			const source = { uri, type, name }
 
-			setAvatarUri(uri)
+			setAvatarUrl(uri)
 
 			updateUser(uri)
 		}
@@ -70,7 +81,7 @@ const profile = () => {
 		try {
 			const response = await UserAPI.updateName(
 				name,
-				user.token,
+				"", // user.token,
 				user._id
 			)
 			console.log("Update successful:", response)
@@ -78,11 +89,12 @@ const profile = () => {
 			console.error("Update failed:", error)
 		}
 	}
+
 	const updateUser = async (uri: string) => {
 		try {
 			const response = await UserAPI.updateUser(
 				uri,
-				user.token,
+				"", // user.token,
 				user._id
 			)
 			console.log("Update successful:", response)
@@ -90,95 +102,110 @@ const profile = () => {
 			console.error("Update failed:", error)
 		}
 	}
+
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<Stack.Screen
 				options={{ header: () => <View></View> }}
 			></Stack.Screen>
 
-			<SafeAreaView style={defaultStyles.container}>
-				<View style={styles.headerContainer}>
-					<Text style={styles.header}>
-						Profile {user.username}
-					</Text>
-					<Ionicons
-						name='notifications-outline'
-						size={26}
-					/>
-				</View>
-
-				<View style={styles.card}>
-					<TouchableOpacity onPress={pickImage}>
-						{user.profile_image ? (
-							<Image
-								source={{ uri: user.profile_image }} // Chuyển đổi thành chuỗi JavaScript
-								style={styles.avatar}
-							/>
-						) : (
-							<Image
-								source={{ uri: avatarUri }}
-								style={styles.avatar}
-							/>
-						)}
-					</TouchableOpacity>
-
-					<View style={{ flexDirection: "row", gap: 6 }}>
-						{!edit && (
-							<View style={styles.editRow}>
-								<Text
-									style={{
-										fontFamily: "mon-b",
-										fontSize: 22,
-									}}
-								>
-									{user.username}
-								</Text>
-								<TouchableOpacity
-									onPress={() => setEdit(true)}
-								>
-									<Ionicons
-										name='create-outline'
-										size={24}
-										color={Colors.dark}
-									/>
-								</TouchableOpacity>
-							</View>
-						)}
-						{edit && (
-							<View style={styles.editRow}>
-								<TextInput
-									style={styles.input}
-									value={newUsername}
-									onChangeText={setNewUsername}
-									placeholder='Enter new username'
-								/>
-								<TouchableOpacity onPress={handleEdit}>
-									<Ionicons
-										name='checkmark-outline'
-										size={24}
-										color={Colors.dark}
-									/>
-								</TouchableOpacity>
-							</View>
-						)}
+			{user.isLogin && (
+				<SafeAreaView style={defaultStyles.container}>
+					<View style={styles.headerContainer}>
+						<Text style={styles.header}>
+							Hi! {user.name}
+						</Text>
+						<Ionicons
+							name='notifications-outline'
+							size={26}
+						/>
 					</View>
-					<Text>{user.email}</Text>
-					<Text>Since {"16/05/2003"}</Text>
-				</View>
 
-				{user.isLogin && (
+					<View style={styles.card}>
+						<TouchableOpacity onPress={pickImage}>
+							{user.avatarUrl ? (
+								<Image
+									source={{ uri: user.avatarUrl }}
+									style={styles.avatar}
+								/>
+							) : (
+								<Image
+									source={{ uri: avatarUrl }}
+									style={styles.avatar}
+								/>
+							)}
+						</TouchableOpacity>
+
+						<View style={{ flexDirection: "row", gap: 6 }}>
+							{!edit && user._id && (
+								<View style={styles.editRow}>
+									<Text
+										style={{
+											fontFamily: "mon-b",
+											fontSize: 22,
+										}}
+									>
+										{user.name}
+									</Text>
+									<TouchableOpacity
+										onPress={() => setEdit(true)}
+									>
+										<Ionicons
+											name='create-outline'
+											size={24}
+											color={Colors.dark}
+										/>
+									</TouchableOpacity>
+								</View>
+							)}
+							{edit && (
+								<View style={styles.editRow}>
+									<TextInput
+										style={styles.input}
+										value={newUsername}
+										onChangeText={setNewUsername}
+										placeholder='Enter new username'
+									/>
+									<TouchableOpacity onPress={handleEdit}>
+										<Ionicons
+											name='checkmark-outline'
+											size={24}
+											color={Colors.dark}
+										/>
+									</TouchableOpacity>
+								</View>
+							)}
+						</View>
+						{user._id && <Text>{user.email}</Text>}
+						{user._id && <Text>{"09/08/2003"}</Text>}
+					</View>
+
 					<Button
 						title='Log Out'
 						onPress={handleLogout}
 						color={Colors.dark}
 					/>
-				)}
-				{!user.isLogin && (
+				</SafeAreaView>
+			)}
+
+			{!user.isLogin && (
+				<SafeAreaView>
+					<View style={styles.headerContainer}>
+						<Text style={styles.header}>Profile</Text>
+						<Ionicons
+							name='notifications-outline'
+							size={26}
+						/>
+					</View>
+
 					<Link href={"/(modals)/login"} asChild>
-						<Button title='Log In' color={Colors.dark} />
+						<Button
+							title='Login   |   Register'
+							color={Colors.dark}
+						/>
 					</Link>
-				)}
-			</SafeAreaView>
+				</SafeAreaView>
+			)}
 		</GestureHandlerRootView>
 	)
 }

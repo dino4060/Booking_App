@@ -1,4 +1,4 @@
-import { User } from "./Host"
+import { User } from "./User"
 
 export type Room = {
 	// Required fields

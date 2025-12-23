@@ -1,6 +1,6 @@
 import Colors from "@/constants/Colors"
-import { Host } from "@/interface/Host"
 import { Room } from "@/interface/Room"
+import { Host } from "@/interface/User"
 import { Ionicons } from "@expo/vector-icons"
 import {
 	Link,

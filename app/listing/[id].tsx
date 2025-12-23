@@ -1,5 +1,5 @@
 import { RoomAPI } from "@/api/RoomAPI"
-import { AltPhoto } from "@/assets/data/api"
+import { HostAvatarUrl } from "@/assets/data/default"
 import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
 import { Room } from "@/interface/Room"
@@ -63,7 +63,7 @@ const DetailsPage = () => {
 		try {
 			await Share.share({
 				title: homeStay?.name || "",
-				url: homeStay?.thumbnailUrls?.[0] || AltPhoto,
+				url: homeStay?.thumbnailUrls?.[0] || HostAvatarUrl,
 			})
 		} catch (err) {
 			console.log(err)

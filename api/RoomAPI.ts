@@ -1,4 +1,4 @@
-import { InternetException } from "@/assets/data/api"
+import { InternetException } from "@/assets/data/default"
 import { ApiRes } from "@/interface/API"
 import { Room } from "@/interface/Room"
 import { SearchOptions } from "@/interface/SearchOptions"
