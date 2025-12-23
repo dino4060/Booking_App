@@ -1,4 +1,4 @@
-import { UserAPI } from "@/api/UserAPI2"
+import { AuthAPI } from "@/api/AuthAPI"
 import { defaultStyles } from "@/constants/Style"
 import {
 	deleteValueSecureStore,
@@ -45,7 +45,7 @@ const LoginWithoutEmailField = () => {
 
 		console.log("login body: " + email + password)
 
-		const res = await UserAPI.login(email, password)
+		const res = await AuthAPI.login(email, password)
 		if (res.success === false) {
 			// setApiError(res.message)
 			return
@@ -56,7 +56,6 @@ const LoginWithoutEmailField = () => {
 		saveUserStore(user)
 		await saveValueSecureStore("token", token)
 		await saveValueSecureStore("email", user.email)
-		await saveValueSecureStore("password", password)
 
 		ToastAndroid.show(
 			"Welcome back " + user.name + " 😍",

@@ -1,4 +1,4 @@
-import { UserAPI } from "@/api/UserAPI2"
+import { AuthAPI } from "@/api/AuthAPI"
 import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
 import { useWarmUpBrowser } from "@/hooks/useWarnUpBrowser"
@@ -103,7 +103,7 @@ const Login = () => {
 			return
 		}
 
-		const res = await UserAPI.login(
+		const res = await AuthAPI.login(
 			data.email,
 			data.password
 		)
@@ -117,7 +117,6 @@ const Login = () => {
 		saveUserStore(user)
 		await saveValueSecureStore("token", token)
 		await saveValueSecureStore("email", user.email)
-		await saveValueSecureStore("password", data.password)
 
 		ToastAndroid.show("Welcome " + user.name + " 😍", 3000)
 		router.push("/(tabs)")

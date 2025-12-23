@@ -3,7 +3,7 @@ import { ApiRes, TApiResFail } from "@/interface/API"
 import { TAuth } from "@/interface/User"
 import { axiosClient } from "./AxiosClient"
 
-export const UserAPI = {
+export const AuthAPI = {
 	login: async (email: string, password: string) => {
 		try {
 			const response = await axiosClient.post(
@@ -23,7 +23,7 @@ export const UserAPI = {
 			return response.data as ApiRes<TAuth>
 		} catch (error: any) {
 			if (error.response) {
-				console.error("Backend error:", error.response.data)
+				console.error("BE error:", error.response.message)
 				return error.response.data as TApiResFail
 			}
 			return InternetException
@@ -55,7 +55,7 @@ export const UserAPI = {
 			return response.data as ApiRes<TAuth>
 		} catch (error: any) {
 			if (error.response) {
-				console.error("Backend error:", error.response.data)
+				console.error("BE error:", error.response.message)
 				return error.response.data as TApiResFail
 			}
 			return InternetException

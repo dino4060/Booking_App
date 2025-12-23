@@ -1,4 +1,4 @@
-import { UserAPI } from "@/api/UserAPI2"
+import { AuthAPI } from "@/api/AuthAPI"
 import { defaultStyles } from "@/constants/Style"
 import { useWarmUpBrowser } from "@/hooks/useWarnUpBrowser"
 import { saveValueSecureStore } from "@/store/SecureStore"
@@ -101,7 +101,7 @@ const Signup = () => {
 	const handleSignUp = async () => {
 		if (!validateForm()) return
 
-		const res = await UserAPI.register(
+		const res = await AuthAPI.register(
 			data.name,
 			data.email,
 			data.password,
@@ -117,7 +117,6 @@ const Signup = () => {
 		saveUserStore(user)
 		await saveValueSecureStore("token", token)
 		await saveValueSecureStore("email", user.email)
-		await saveValueSecureStore("password", data.password)
 
 		ToastAndroid.showWithGravity(
 			"Khám phá phòng đẹp ngay!",

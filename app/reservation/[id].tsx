@@ -24,7 +24,7 @@ import Animated, {
 
 import { RoomAPI } from "@/api/RoomAPI"
 import { Room } from "@/interface/Room"
-import { useUserStore } from "@/store/useUserStore"
+import { getValueSecureStore } from "@/store/SecureStore"
 import { formatPriceVND } from "@/utils/number.util"
 import { UtilFunction } from "@/utils/utilFunction"
 import { Calendar } from "react-native-calendars"
@@ -35,13 +35,16 @@ const AnimatedTouchableOpacity =
 
 const DetailPage = () => {
 	const { id } = useLocalSearchParams()
-
+	const [openCard, setOpenCard] = useState(1)
+	const router = useRouter()
+	const [homeStay, setHomeStay] = useState<Room>()
 	const [dateRange, setDateRange] = useState({
 		startDate: "",
 		endDate: "",
 	})
-	const [markedDates, setMarkedDates] = useState({})
-	const [bookedDate, setBookedDate] = useState<string[]>([])
+	const [bookedDates, setBookedDates] = useState<string[]>(
+		[]
+	)
 	const [dataPrice, setDataPrice] = useState({
 		numberOfDay: UtilFunction.calcDate(
 			dateRange.startDate,
@@ -50,23 +53,16 @@ const DetailPage = () => {
 		total: 0,
 	})
 
-	// get data of room by id, render to UI
-	const [homeStay, setHomeStay] = useState<Room>()
-
 	useEffect(() => {
 		const getRoom = async (id: number) => {
-			const res = await RoomAPI.getRoomById(id)
+			const res = await RoomAPI.getRoom(id)
 			if (res.success == false) return
 			setHomeStay(res.data || ({} as Room))
-			// setBookedDate(["2025-12-31"])
-			setBookedDate(res.data.bookedDates)
+			setBookedDates(res.data.bookedDates)
 		}
 
 		getRoom(Number(id))
 	}, [])
-
-	const [openCard, setOpenCard] = useState(1)
-	const router = useRouter()
 
 	useEffect(() => {
 		if (
@@ -110,7 +106,7 @@ const DetailPage = () => {
 			if (date.dateString !== startDate) {
 				if (
 					checkBookedDateContainDateRange(
-						bookedDate,
+						bookedDates,
 						startDate,
 						date.dateString
 					)
@@ -137,26 +133,35 @@ const DetailPage = () => {
 		}
 	}
 
-	const { user } = useUserStore()
-
 	const handleBooking = async () => {
-		const user_id = user._id
-		// const token = user.token
-		const room_id = id as string
-		const start_date = dateRange.startDate
-		const end_date = dateRange.endDate
+		const roomId = id as string
+		const startDate = dateRange.startDate
+		const endDate = dateRange.endDate
+		const total = dataPrice.total
+		const accessToken = await getValueSecureStore("token")
 
-		const res = await RoomAPI.reservation(
-			user_id,
-			room_id,
-			start_date,
-			end_date,
-			"" // token
-		)
+		if (accessToken === null) {
+			console.error("Token is empty")
+			return
+		}
+		const body = { accessToken, roomId, startDate, endDate, total }
+		console.log("body 1: ", body)
 
-		const message = "Chúc mừng bạn đã đặt phòng thành công"
+		// const result = await BookingAPI.book(
+		// 	roomId,
+		// 	startDate,
+		// 	endDate,
+		// 	accessToken
+		// )
 
-		if (res) router.push(`(information)/${message}` as any)
+		// if (result.success === false) {
+		// 	console.error("API Error: " + result.message)
+		// 	return
+		// }
+
+		// const message = "Chúc mừng bạn đã đặt phòng thành công"
+
+		// router.push(`(information)/${message}` as any)
 	}
 
 	return (
@@ -222,7 +227,7 @@ const DetailPage = () => {
 							exiting={FadeOut.duration(200)}
 						>
 							<Text style={styles.previewText}>
-								Chi phí 1 đêm
+								Chi phí cho 1 đêm
 							</Text>
 							<Text style={styles.previewData}>
 								{homeStay?.price
@@ -254,7 +259,7 @@ const DetailPage = () => {
 										dateRange.startDate,
 										dateRange.endDate
 									),
-									...generateDisableDate(bookedDate),
+									...generateDisableDate(bookedDates),
 								}}
 							/>
 							{/* <Calendar

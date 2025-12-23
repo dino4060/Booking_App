@@ -49,7 +49,7 @@ const DetailsPage = () => {
 	const [type, setType] = useState<string>()
 
 	const getRoom = async (id: number) => {
-		const res = await RoomAPI.getRoomById(id)
+		const res = await RoomAPI.getRoom(id)
 		if (res.success == false) return
 		setHomeStay(res.data || ({} as Room))
 	}
@@ -334,11 +334,6 @@ const DetailsPage = () => {
 					}}
 				>
 					<TouchableOpacity style={styles.footerText}>
-						{/* <Text style={styles.footerPrice}>
-							{formatPriceVND(homeStay?.price)}
-						</Text>
-						<Text>cho 2 đêm</Text> */}
-
 						<Text>
 							<Text style={styles.footerPrice}>
 								{formatPriceVND(homeStay?.price)}
