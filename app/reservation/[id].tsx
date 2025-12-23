@@ -1,6 +1,5 @@
 import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
-import { Ionicons } from "@expo/vector-icons"
 import { TouchableOpacity } from "@gorhom/bottom-sheet"
 import {
 	Stack,
@@ -20,13 +19,13 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import Animated, {
 	FadeIn,
 	FadeOut,
-	SlideInDown,
 } from "react-native-reanimated"
 // @ts-ignore
 
 import { RoomAPI } from "@/api/RoomAPI"
 import { Room } from "@/interface/Room"
 import { useUserStore } from "@/store/useUserStore"
+import { formatPriceVND } from "@/utils/number.util"
 import { UtilFunction } from "@/utils/utilFunction"
 import { Calendar } from "react-native-calendars"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -42,9 +41,9 @@ const DetailPage = () => {
 		endDate: "",
 	})
 	const [markedDates, setMarkedDates] = useState({})
-	const [bookedDate, setBookedDate] = useState([])
+	const [bookedDate, setBookedDate] = useState<string[]>([])
 	const [dataPrice, setDataPrice] = useState({
-		numberOfDay: UtilFunction.caculateDate(
+		numberOfDay: UtilFunction.calcDate(
 			dateRange.startDate,
 			dateRange.endDate
 		),
@@ -59,13 +58,14 @@ const DetailPage = () => {
 			const res = await RoomAPI.getRoomById(id)
 			if (res.success == false) return
 			setHomeStay(res.data || ({} as Room))
-			setBookedDate(["2024-12-23"] as any)
+			// setBookedDate(["2025-12-31"])
+			setBookedDate(res.data.bookedDates)
 		}
 
 		getRoom(Number(id))
 	}, [])
 
-	const [openCard, setOpenCard] = useState(0)
+	const [openCard, setOpenCard] = useState(1)
 	const router = useRouter()
 
 	useEffect(() => {
@@ -76,17 +76,18 @@ const DetailPage = () => {
 			)
 		) {
 			setDataPrice(() => {
-				let numberOfDay = UtilFunction.caculateDate(
+				let numberOfDay = UtilFunction.calcDate(
 					dateRange.startDate,
 					dateRange.endDate
 				)
+				const singlePrice = homeStay?.price
+					? homeStay?.price / 2
+					: 0
 
 				return {
 					numberOfDay: numberOfDay,
 					total: Number.parseFloat(
-						(numberOfDay * (homeStay?.price || 0)).toFixed(
-							2
-						)
+						(numberOfDay * singlePrice).toFixed(2)
 					),
 				}
 			})
@@ -164,7 +165,11 @@ const DetailPage = () => {
 				options={{
 					header: () => (
 						<SafeAreaView
-							style={{ ...styles.card, padding: 20 }}
+							style={{
+								...styles.card,
+								padding: 5,
+								marginTop: 30,
+							}}
 						>
 							<Text style={styles.previewText}>
 								Having amazing trip in {homeStay?.name} 🔥
@@ -173,25 +178,17 @@ const DetailPage = () => {
 					),
 				}}
 			></Stack.Screen>
+
 			<ScrollView style={{ flex: 1 }}>
 				<View
 					style={{ ...styles.card, paddingBottom: 200 }}
 				>
-					{openCard != 1 && (
-						<AnimatedTouchableOpacity
-							onPress={() => setOpenCard(1)}
-							style={styles.cardPreview}
-							entering={FadeIn.duration(200)}
-							exiting={FadeOut.duration(200)}
-						>
-							<Text style={styles.previewText}>When</Text>
-							<Text style={styles.previewdData}>
-								Any week
-							</Text>
-						</AnimatedTouchableOpacity>
-					)}
-
-					<View style={{ ...styles.card, padding: 20 }}>
+					<View
+						style={{
+							borderRadius: 14,
+							padding: 20,
+						}}
+					>
 						<Image
 							source={{
 								uri:
@@ -203,10 +200,40 @@ const DetailPage = () => {
 						/>
 					</View>
 
+					{openCard != 1 && (
+						<AnimatedTouchableOpacity
+							onPress={() => setOpenCard(1)}
+							style={styles.cardPreview}
+							entering={FadeIn.duration(200)}
+							exiting={FadeOut.duration(200)}
+						>
+							<Text style={styles.previewText}>When</Text>
+							<Text style={styles.previewData}>
+								Any week
+							</Text>
+						</AnimatedTouchableOpacity>
+					)}
+
 					{openCard == 1 && (
-						<Text style={styles.cardHeader}>
-							When's your trip?
-						</Text>
+						<AnimatedTouchableOpacity
+							onPress={() => setOpenCard(1)}
+							style={styles.cardPreview}
+							entering={FadeIn.duration(200)}
+							exiting={FadeOut.duration(200)}
+						>
+							<Text style={styles.previewText}>
+								Chi phí 1 đêm
+							</Text>
+							<Text style={styles.previewData}>
+								{homeStay?.price
+									? formatPriceVND(homeStay?.price / 2)
+									: 0}
+							</Text>
+						</AnimatedTouchableOpacity>
+					)}
+
+					{openCard == 1 && (
+						<Text style={styles.cardHeader}>Chọn ngày</Text>
 					)}
 
 					{openCard == 1 && (
@@ -214,13 +241,12 @@ const DetailPage = () => {
 							<Calendar
 								firstDay={0}
 								style={{
-									borderRadius: 10,
-									elevation: 4,
-									margin: 40,
+									margin: 30,
+									marginTop: 0,
 								}}
 								onDayPress={handleDayPress}
 								minDate={formatDate()}
-								maxDate='2025-01-01'
+								maxDate={formatDate(1)}
 								hideExtraDays={true}
 								markingType='period'
 								markedDates={{
@@ -231,11 +257,11 @@ const DetailPage = () => {
 									...generateDisableDate(bookedDate),
 								}}
 							/>
-							<Calendar
+							{/* <Calendar
 								onDayPress={(day) => {
 									console.log("selected day", day)
 								}}
-							/>
+							/> */}
 						</Animated.View>
 					)}
 				</View>
@@ -244,8 +270,11 @@ const DetailPage = () => {
 			</ScrollView>
 
 			<Animated.View
-				style={defaultStyles.footer}
-				entering={SlideInDown.delay(200)}
+				style={{
+					...defaultStyles.footer,
+					paddingBottom: 50,
+				}}
+				// entering={SlideInDown.delay(200)}
 			>
 				<View
 					style={{
@@ -255,36 +284,27 @@ const DetailPage = () => {
 					}}
 				>
 					<TouchableOpacity
-						style={{
-							height: "100%",
-							justifyContent: "center",
-						}}
+						style={styles.footerText}
 						onPress={onClearAll}
 					>
-						<Text
-							style={{
-								fontSize: 18,
-								fontFamily: "mon-sb",
-							}}
-						>
-							Total: € {dataPrice.total}
+						<Text>
+							<Text style={styles.footerPrice}>
+								{`Tổng ${formatPriceVND(dataPrice.total)}`}
+							</Text>
+							{`  / ${dataPrice.numberOfDay} đêm`}
 						</Text>
 					</TouchableOpacity>
 
 					<TouchableOpacity
+						onPress={() => handleBooking()}
 						style={[
 							defaultStyles.btn,
-							{ paddingRight: 20, paddingLeft: 50 },
+							{ paddingRight: 20, paddingLeft: 20 },
 						]}
-						onPress={() => handleBooking()}
 					>
-						<Ionicons
-							name='search-outline'
-							size={24}
-							style={defaultStyles.btnIcon}
-							color={"#fff"}
-						/>
-						<Text style={defaultStyles.btnText}>Book</Text>
+						<Text style={defaultStyles.btnText}>
+							Book now
+						</Text>
 					</TouchableOpacity>
 				</View>
 			</Animated.View>
@@ -316,12 +336,13 @@ function isDateXAfterDateY(dateX: string, dateY: string) {
 	return x > y
 }
 
-function formatDate(): string {
+function formatDate(plusYear = 0): string {
 	const today: Date = new Date()
 	const year: number = today.getFullYear()
 	const month: number = today.getMonth() + 1 // January is 0
 	const day: number = today.getDate()
 
+	const formattedYear = year + plusYear
 	// Padding single digits with leading zeros
 	const formattedMonth: string =
 		month < 10 ? `0${month}` : `${month}`
@@ -329,7 +350,7 @@ function formatDate(): string {
 		day < 10 ? `0${day}` : `${day}`
 
 	// Combining the components into the desired format
-	const formattedDate: string = `${year}-${formattedMonth}-${formattedDay}`
+	const formattedDate: string = `${formattedYear}-${formattedMonth}-${formattedDay}`
 
 	return formattedDate
 }
@@ -393,9 +414,25 @@ function generateMarkedDates(
 }
 
 const styles = StyleSheet.create({
+	header: {
+		backgroundColor: "#fff",
+		height: 100,
+		borderBottomWidth: StyleSheet.hairlineWidth,
+		borderColor: Colors.grey,
+	},
+	footerText: {
+		height: "100%",
+		justifyContent: "center",
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 4,
+	},
+	footerPrice: {
+		fontSize: 18,
+		fontFamily: "mon-sb",
+	},
 	container: {
 		flex: 1,
-
 		backgroundColor: "white",
 	},
 	card: {
@@ -410,12 +447,13 @@ const styles = StyleSheet.create({
 			width: 2,
 			height: 2,
 		},
-		gap: 20,
+		// gap: 20,
 	},
 	cardHeader: {
 		fontFamily: "mon-b",
 		fontSize: 24,
-		padding: 20,
+		paddingTop: 20,
+		paddingLeft: 20,
 	},
 	cardBody: {
 		paddingHorizontal: 20,
@@ -425,6 +463,8 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "space-between",
 		padding: 20,
+		paddingTop: 0,
+		paddingBottom: 10,
 	},
 
 	searchSection: {
@@ -466,8 +506,9 @@ const styles = StyleSheet.create({
 		fontFamily: "mon-sb",
 		fontSize: 14,
 		color: Colors.grey,
+		textAlign: "center",
 	},
-	previewdData: {
+	previewData: {
 		fontFamily: "mon-sb",
 		fontSize: 14,
 		color: Colors.dark,

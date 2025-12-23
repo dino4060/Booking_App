@@ -1,5 +1,5 @@
 export const UtilFunction = {
-	caculateDate: (startDate: string, endDate: string) => {
+	calcDate: (startDate: string, endDate: string) => {
 		if (startDate == "" || endDate == "") return 0
 
 		// Convert start and end dates to milliseconds

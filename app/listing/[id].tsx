@@ -334,10 +334,17 @@ const DetailsPage = () => {
 					}}
 				>
 					<TouchableOpacity style={styles.footerText}>
-						<Text style={styles.footerPrice}>
+						{/* <Text style={styles.footerPrice}>
 							{formatPriceVND(homeStay?.price)}
 						</Text>
-						<Text>cho 2 đêm</Text>
+						<Text>cho 2 đêm</Text> */}
+
+						<Text>
+							<Text style={styles.footerPrice}>
+								{formatPriceVND(homeStay?.price)}
+							</Text>
+							{`  cho 2 đêm`}
+						</Text>
 					</TouchableOpacity>
 
 					<TouchableOpacity
