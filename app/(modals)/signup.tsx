@@ -120,7 +120,7 @@ const Signup = () => {
 		await saveValueSecureStore("password", data.password)
 
 		ToastAndroid.showWithGravity(
-			"Đăng ký thành công. Khám phá phòng đẹp ngay!",
+			"Khám phá phòng đẹp ngay!",
 			ToastAndroid.SHORT,
 			ToastAndroid.BOTTOM
 		)

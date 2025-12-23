@@ -44,10 +44,10 @@ const DetailPage = () => {
 	const { user } = useUserStore()
 	const [host, setHost] = useState<Host>()
 	useEffect(() => {
-		getHostInfor(hostID as string)
+		getHostInfo(hostID as string)
 	}, [])
 
-	const getHostInfor = async (id: string) => {
+	const getHostInfo = async (id: string) => {
 		// const res = await HostAPI.getHostInformation(id);
 		// setHost(res?.data?.data as any);
 	}
@@ -91,7 +91,7 @@ const DetailPage = () => {
 					exiting={FadeOut}
 				>
 					<Animated.Image
-						source={{ uri: item.thumbnail_urls?.[0] || "" }} // Provide an empty string as a fallback if thumbnail_url is null
+						source={{ uri: item.thumbnailUrls?.[0] || "" }} // Provide an empty string as a fallback if thumbnail_url is null
 						style={styles.imageItem}
 					/>
 					<TouchableOpacity
@@ -129,7 +129,7 @@ const DetailPage = () => {
 							textAlign: "center",
 						}}
 					>
-						{item.room_type}
+						{item.roomType}
 					</Text>
 					<View
 						style={{

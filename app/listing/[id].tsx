@@ -102,38 +102,40 @@ const DetailsPage = () => {
 		navigation.setOptions({
 			headerTitle: "",
 			headerTransparent: true,
-
 			headerBackground: () => (
 				<Animated.View
 					style={[headerAnimatedStyle, styles.header]}
 				></Animated.View>
 			),
-			headerRight: () => (
-				<View style={styles.bar}>
-					<TouchableOpacity
-						style={styles.roundButton}
-						onPress={shareRoom}
-					>
-						<Ionicons
-							name='share-outline'
-							size={22}
-							color={"#000"}
-						/>
-					</TouchableOpacity>
-				</View>
-			),
-			headerLeft: () => (
-				<TouchableOpacity
-					style={styles.roundButton}
-					onPress={() => navigation.goBack()}
-				>
-					<Ionicons
-						name='chevron-back'
-						size={24}
-						color={"#000"}
-					/>
-				</TouchableOpacity>
-			),
+			// headerRight: () => (
+			// 	<View style={styles.bar}>
+			// 		<TouchableOpacity
+			// 			style={styles.roundButton}
+			// 			onPress={shareRoom}
+			// 		>
+			// 			<Ionicons
+			// 				name='share-outline'
+			// 				size={22}
+			// 				color={"#000"}
+			// 			/>
+			// 		</TouchableOpacity>
+			// 	</View>
+			// ),
+			// headerLeft: () => (
+			// 	<TouchableOpacity
+			// 		style={styles.roundButton}
+			// 		onPress={() => {
+			// 			console.log("back")
+			// 			router.back()
+			// 		}}
+			// 	>
+			// 		<Ionicons
+			// 			name='chevron-back'
+			// 			size={24}
+			// 			color={"#000"}
+			// 		/>
+			// 	</TouchableOpacity>
+			// ),
 		})
 	}, [])
 

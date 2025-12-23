@@ -1,5 +1,6 @@
 import ModalHeader from "@/components/ModalHeader"
 import { useColorScheme } from "@/components/useColorScheme"
+import Colors from "@/constants/Colors"
 import { useUserStore } from "@/store/useUserStore"
 // import { ClerkProvider } from "@clerk/clerk-expo"
 import { Ionicons } from "@expo/vector-icons"
@@ -8,7 +9,17 @@ import { Stack, useRouter } from "expo-router"
 import * as SecureStore from "expo-secure-store"
 import * as SplashScreen from "expo-splash-screen"
 import { useCallback, useEffect, useState } from "react"
-import { TouchableOpacity } from "react-native"
+import {
+	Dimensions,
+	StyleSheet,
+	TouchableOpacity,
+} from "react-native"
+import Animated, {
+	interpolate,
+	useAnimatedRef,
+	useAnimatedStyle,
+	useScrollViewOffset,
+} from "react-native-reanimated"
 
 SplashScreen.preventAutoHideAsync()
 
@@ -136,6 +147,18 @@ function RootLayoutNav() {
 		checkLogedState()
 	}, [])
 
+	const scrollRef = useAnimatedRef<Animated.ScrollView>()
+	const scrollOffset = useScrollViewOffset(scrollRef)
+	const headerAnimatedStyle = useAnimatedStyle(() => {
+		return {
+			opacity: interpolate(
+				scrollOffset.value,
+				[0, IMG_HEIGHT / 1.5],
+				[0, 1]
+			),
+		}
+	}, [])
+
 	return (
 		<Stack>
 			<Stack.Screen
@@ -147,7 +170,7 @@ function RootLayoutNav() {
 			<Stack.Screen
 				name='(modals)/login'
 				options={{
-					title: "Đăng ký",
+					title: "Đăng nhập",
 
 					headerTitleStyle: {
 						fontFamily: "mon-sb",
@@ -192,7 +215,69 @@ function RootLayoutNav() {
 
 			<Stack.Screen
 				name='listing/[id]'
-				options={{ headerTitle: "" }}
+				options={{
+					headerTitle: "",
+					// headerLeft: () => (
+					// 	<TouchableOpacity
+					// 		style={{
+					// 			width: 40,
+					// 			height: 40,
+					// 			borderRadius: 50,
+					// 			backgroundColor: "white",
+					// 			alignItems: "center",
+					// 			justifyContent: "center",
+					// 			// color: Colors.primary,
+					// 		}}
+					// 		onPress={() => {
+					// 			console.log("back")
+					// 			router.back()
+					// 		}}
+					// 	>
+					// 		<Ionicons
+					// 			name='chevron-down'
+					// 			size={24}
+					// 			color={"#000"}
+					// 		/>
+					// 	</TouchableOpacity>
+					// ),
+
+					// headerTitle: "",
+					// headerTransparent: true,
+					// headerBackground: () => (
+					// 	<Animated.View
+					// 		style={[headerAnimatedStyle, styles2.header]}
+					// 	></Animated.View>
+					// ),
+					// headerRight: () => (
+					// 	<View style={styles2.bar}>
+					// 		<TouchableOpacity
+					// 			style={styles2.roundButton}
+					// 			// onPress={shareRoom}
+					// 		>
+					// 			<Ionicons
+					// 				name='share-outline'
+					// 				size={22}
+					// 				color={"#000"}
+					// 			/>
+					// 		</TouchableOpacity>
+					// 	</View>
+					// ),
+					// headerLeft: () => (
+					// 	<TouchableOpacity
+					// 		style={styles2.roundButton}
+					// 		onPress={() => {
+					// 			console.log("back")
+					// 			router.back()
+					// 		}}
+					// 	>
+					// 		<Ionicons
+					// 			name='chevron-down'
+					// 			size={24}
+					// 			color={"#000"}
+					// 		/>
+					// 	</TouchableOpacity>
+					// ),
+				}}
 			/>
 			<Stack.Screen
 				name='(modals)/booking'
@@ -217,3 +302,104 @@ function RootLayoutNav() {
 		</Stack>
 	)
 }
+
+const { width } = Dimensions.get("window")
+const IMG_HEIGHT = 340
+
+const styles2 = StyleSheet.create({
+	container: {
+		flex: 1,
+		backgroundColor: "white",
+	},
+	image: {
+		height: IMG_HEIGHT,
+		width: width,
+	},
+	infoContainer: {
+		padding: 24,
+		backgroundColor: "#fff",
+	},
+	name: {
+		fontSize: 26,
+		fontFamily: "mon-sb",
+	},
+	location: {
+		fontSize: 18,
+		marginTop: 10,
+		fontFamily: "mon-sb",
+	},
+	rooms: {
+		fontSize: 16,
+		color: Colors.grey,
+		marginVertical: 4,
+		fontFamily: "mon",
+	},
+	ratings: {
+		fontSize: 16,
+		fontFamily: "mon-sb",
+	},
+	divider: {
+		height: StyleSheet.hairlineWidth,
+		backgroundColor: Colors.grey,
+		marginVertical: 16,
+	},
+	host: {
+		width: 50,
+		height: 50,
+		borderRadius: 50,
+		backgroundColor: Colors.grey,
+	},
+	hostView: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 12,
+	},
+	footerText: {
+		height: "100%",
+		justifyContent: "center",
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 4,
+	},
+	footerPrice: {
+		fontSize: 18,
+		fontFamily: "mon-sb",
+	},
+	roundButton: {
+		width: 40,
+		height: 40,
+		borderRadius: 50,
+		backgroundColor: "white",
+		alignItems: "center",
+		justifyContent: "center",
+		color: Colors.primary,
+	},
+	bar: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		gap: 10,
+	},
+	header: {
+		backgroundColor: "#fff",
+		height: 100,
+		borderBottomWidth: StyleSheet.hairlineWidth,
+		borderColor: Colors.grey,
+	},
+	description: {
+		fontSize: 15,
+		maxWidth: "95%",
+		fontFamily: "mon",
+		marginTop: 4,
+		color: "black",
+		borderWidth: 1,
+		borderColor: "#e2e8f0",
+		borderRadius: 20,
+		padding: 14,
+	},
+	detail: {
+		flexDirection: "row",
+		gap: 12,
+		alignItems: "flex-start",
+	},
+})

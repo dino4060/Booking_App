@@ -27,8 +27,8 @@ import Animated, {
 import { RoomAPI } from "@/api/RoomAPI"
 import { Room } from "@/interface/Room"
 import { useUserStore } from "@/store/useUserStore"
-// import { Calendar } from "react-native-calendars"
 import { UtilFunction } from "@/utils/utilFunction"
+import { Calendar } from "react-native-calendars"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 const AnimatedTouchableOpacity =
@@ -54,18 +54,15 @@ const DetailPage = () => {
 	// get data of room by id, render to UI
 	const [homeStay, setHomeStay] = useState<Room>()
 
-	const getRoomById = async (id: string) => {
-		try {
-			// const res = await RoomAPI.getRoomById(id)
-			// setHomeStay(res?.data.data.room)
-			// setBookedDate(["2024-05-20"] as any)
-		} catch (error) {
-			console.log(error)
-		}
-	}
-
 	useEffect(() => {
-		getRoomById(id.toString())
+		const getRoom = async (id: number) => {
+			const res = await RoomAPI.getRoomById(id)
+			if (res.success == false) return
+			setHomeStay(res.data || ({} as Room))
+			setBookedDate(["2024-12-23"] as any)
+		}
+
+		getRoom(Number(id))
 	}, [])
 
 	const [openCard, setOpenCard] = useState(0)
@@ -143,7 +140,7 @@ const DetailPage = () => {
 
 	const handleBooking = async () => {
 		const user_id = user._id
-		const token = user.token
+		// const token = user.token
 		const room_id = id as string
 		const start_date = dateRange.startDate
 		const end_date = dateRange.endDate
@@ -153,7 +150,7 @@ const DetailPage = () => {
 			room_id,
 			start_date,
 			end_date,
-			token
+			"" // token
 		)
 
 		const message = "Chúc mừng bạn đã đặt phòng thành công"
@@ -198,7 +195,7 @@ const DetailPage = () => {
 						<Image
 							source={{
 								uri:
-									homeStay?.thumbnail_urls?.[0] ||
+									homeStay?.thumbnailUrls?.[0] ||
 									"https://placehold.jp/500x300.png",
 							}}
 							style={[styles.image]}
@@ -214,7 +211,7 @@ const DetailPage = () => {
 
 					{openCard == 1 && (
 						<Animated.View>
-							{/* <Calendar
+							<Calendar
 								firstDay={0}
 								style={{
 									borderRadius: 10,
@@ -233,7 +230,12 @@ const DetailPage = () => {
 									),
 									...generateDisableDate(bookedDate),
 								}}
-							/> */}
+							/>
+							<Calendar
+								onDayPress={(day) => {
+									console.log("selected day", day)
+								}}
+							/>
 						</Animated.View>
 					)}
 				</View>

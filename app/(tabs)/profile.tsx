@@ -137,7 +137,7 @@ const profile = () => {
 						</TouchableOpacity>
 
 						<View style={{ flexDirection: "row", gap: 6 }}>
-							{!edit && user._id && (
+							{!edit && (
 								<View style={styles.editRow}>
 									<Text
 										style={{
@@ -158,6 +158,7 @@ const profile = () => {
 									</TouchableOpacity>
 								</View>
 							)}
+
 							{edit && (
 								<View style={styles.editRow}>
 									<TextInput
@@ -176,12 +177,9 @@ const profile = () => {
 								</View>
 							)}
 						</View>
-						{user._id && (
-							<Text>{`Email ${user.email}`}</Text>
-						)}
-						{user._id && (
-							<Text>{`Số điện thoại ${user.phone}`}</Text>
-						)}
+
+						<Text>{`Email ${user.email}`}</Text>
+						<Text>{`Số điện thoại ${user.phone}`}</Text>
 					</View>
 
 					<Button
