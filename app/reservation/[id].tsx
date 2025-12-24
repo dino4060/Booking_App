@@ -22,6 +22,7 @@ import Animated, {
 } from "react-native-reanimated"
 // @ts-ignore
 
+import { BookingAPI } from "@/api/BookingAPI"
 import { RoomAPI } from "@/api/RoomAPI"
 import { Room } from "@/interface/Room"
 import { getValueSecureStore } from "@/store/SecureStore"
@@ -144,24 +145,25 @@ const DetailPage = () => {
 			console.error("Token is empty")
 			return
 		}
-		const body = { accessToken, roomId, startDate, endDate, total }
-		console.log("body 1: ", body)
 
-		// const result = await BookingAPI.book(
-		// 	roomId,
-		// 	startDate,
-		// 	endDate,
-		// 	accessToken
-		// )
+		const result = await BookingAPI.book(
+			roomId,
+			startDate,
+			endDate,
+			total,
+			accessToken
+		)
 
-		// if (result.success === false) {
-		// 	console.error("API Error: " + result.message)
-		// 	return
-		// }
+		if (result.success === false) {
+			console.error("API Error: ", result.message)
+			return
+		}
 
-		// const message = "Chúc mừng bạn đã đặt phòng thành công"
+		console.info("API data: ", result.data)
 
-		// router.push(`(information)/${message}` as any)
+		const message = "Chúc mừng bạn đã đặt phòng thành công"
+
+		router.push(`(information)/${message}` as any)
 	}
 
 	return (

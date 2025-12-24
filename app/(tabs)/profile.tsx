@@ -41,10 +41,7 @@ const profile = () => {
 	}, [])
 
 	const handleLogout = async () => {
-		// await deleteValueSecureStore("email")
 		await deleteValueSecureStore("token")
-		await deleteValueSecureStore("id")
-		await deleteValueSecureStore("password")
 		saveUserStore({ ...DefaultUser, name: user.name })
 		router.push("/")
 	}

@@ -6,11 +6,8 @@ import {
 	useLocalSearchParams,
 } from "expo-router"
 import { default as React } from "react"
-import { Text, View } from "react-native"
-import {
-	GestureHandlerRootView,
-	TouchableOpacity,
-} from "react-native-gesture-handler"
+import { Text, TouchableOpacity, View } from "react-native"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 
 const Congatulation = () => {
 	const { congatulation } = useLocalSearchParams()
@@ -45,9 +42,67 @@ const Congatulation = () => {
 				>
 					{congatulation}
 				</Text>
-				<TouchableOpacity
+
+				{/* Container cho 2 nút nằm ngang */}
+				<View
+					style={{
+						flexDirection: "row",
+						gap: 10,
+						paddingHorizontal: 20,
+					}}
+				>
+					{/* Nút Back to home */}
+					<TouchableOpacity
+						onPress={() => {
+							router.push("/")
+						}}
+						style={{
+							...defaultStyles.btn,
+							flex: 1, // Để 2 nút có độ rộng tương đương nhau
+							backgroundColor: "#111827",
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "center",
+							gap: 5,
+						}}
+					>
+						<Ionicons
+							name='log-in-outline'
+							size={22}
+							color='white'
+						/>
+						<Text style={defaultStyles.btnText}>
+							Home page
+						</Text>
+					</TouchableOpacity>
+
+					{/* Nút Your Trips */}
+					<TouchableOpacity
+						onPress={() => {
+							router.push("/trips") // Cập nhật path theo route của bạn
+						}}
+						style={{
+							...defaultStyles.btn,
+							flex: 1,
+							backgroundColor: "#ef4444",
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "center",
+							gap: 5,
+						}}
+					>
+						<Ionicons
+							name='briefcase-outline'
+							size={22}
+							color='white'
+						/>
+						<Text style={defaultStyles.btnText}>
+							Your trips
+						</Text>
+					</TouchableOpacity>
+				</View>
+				{/* <TouchableOpacity
 					onPress={() => {
-						// router.push("/(modals)/login")
 						router.push("/")
 					}}
 					style={{
@@ -67,9 +122,9 @@ const Congatulation = () => {
 					/>
 
 					<Text style={defaultStyles.btnText}>
-						Back to login
+						Back to home
 					</Text>
-				</TouchableOpacity>
+				</TouchableOpacity> */}
 			</View>
 		</GestureHandlerRootView>
 	)

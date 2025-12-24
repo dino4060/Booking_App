@@ -4,6 +4,7 @@ import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
 import { Room } from "@/interface/Room"
 import { Wishlist } from "@/interface/Wishlist"
+import { getValueSecureStore } from "@/store/SecureStore"
 import { WishlistHandle } from "@/utils/Function"
 import {
 	formatExperienceInfo,
@@ -96,6 +97,15 @@ const DetailsPage = () => {
 			: "no"
 		console.log("check exit: ", checkExit)
 		setType(checkExit)
+	}
+
+	const handleReserveRoom = async () => {
+		const accessToken = await getValueSecureStore("token")
+		if (!accessToken) {
+			router.push("/(modals)/login")
+			return
+		}
+		router.push(`/reservation/${homeStay?._id}`)
 	}
 
 	useLayoutEffect(() => {
@@ -343,9 +353,7 @@ const DetailsPage = () => {
 					</TouchableOpacity>
 
 					<TouchableOpacity
-						onPress={() =>
-							router.push(`/reservation/${homeStay?._id}`)
-						}
+						onPress={handleReserveRoom}
 						style={[
 							defaultStyles.btn,
 							{ paddingRight: 20, paddingLeft: 20 },

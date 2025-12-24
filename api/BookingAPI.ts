@@ -7,15 +7,17 @@ export const BookingAPI = {
 		roomId: string,
 		startDate: string,
 		endDate: string,
+		total: number,
 		token: string
 	) => {
 		try {
 			const response = await axiosClient.post(
-				"/booking",
+				"/api/bookings",
 				{
 					roomId,
 					startDate,
 					endDate,
+					total,
 				},
 				{
 					headers: {
