@@ -3,10 +3,38 @@ import {
 	TApiResFail,
 	TApiResSuccess,
 } from "@/interface/Base"
-import { TTrip } from "@/interface/Trip"
+import {
+	TripStatusMap,
+	TTrip,
+	TTripStatus,
+} from "@/interface/Trip"
 import { axiosClient } from "./AxiosClient"
 
 export const TripAPI = {
+	cancelTrip: async (token: string, tripId: number) => {
+		try {
+			const status: TTripStatus = "CANCELED"
+			const response = await axiosClient.patch(
+				"/api/trips",
+				{
+					_id: tripId,
+					status: TripStatusMap.CANCELED,
+				},
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			)
+			return response.data as TApiResSuccess<TTrip>
+		} catch (error: any) {
+			if (error.response) {
+				return error.response.data as TApiResFail
+			}
+			return InternetException
+		}
+	},
 	listTrips: async (token: string) => {
 		try {
 			const response = await axiosClient.get("/api/trips", {

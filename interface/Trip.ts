@@ -14,6 +14,13 @@ export const TripStatusList: TTripStatus[] = [
 	"CANCELED",
 ]
 
+export const TripStatusMap = {
+	UPCOMING: "UPCOMING",
+	ONGOING: "ONGOING",
+	ENDED: "ENDED",
+	CANCELED: "CANCELED",
+}
+
 export type TTrip = {
 	_id: number
 	id: number

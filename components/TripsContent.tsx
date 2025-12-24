@@ -1,3 +1,4 @@
+import { TripAPI } from "@/api/TripAPI"
 import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
 import {
@@ -5,12 +6,16 @@ import {
 	TTrip,
 	TTripStatus,
 } from "@/interface/Trip"
+import { getValueSecureStore } from "@/store/SecureStore"
 import { formatPriceVND } from "@/utils/number.util"
+import { router } from "expo-router"
 import React, { useEffect, useState } from "react"
 import {
+	Alert,
 	ListRenderItem,
 	StyleSheet,
 	Text,
+	ToastAndroid,
 	TouchableOpacity,
 	View,
 } from "react-native"
@@ -19,114 +24,252 @@ import Animated from "react-native-reanimated"
 
 interface Props {
 	trips: TTrip[]
+	setSyncList: (
+		value: boolean | ((prev: boolean) => boolean)
+	) => void
 }
 
-const TripsContent = ({ trips }: Props) => {
+const TripsContent = ({ trips, setSyncList }: Props) => {
 	const [filterTrips, setFilterTrips] = useState<TTrip[]>(
 		[]
 	)
 	const [tripStatus, setTripStatus] =
 		useState<TTripStatus>("UPCOMING")
+	const [cancelMode, setCancelMode] = useState<
+		Record<string, boolean>
+	>({})
 
 	useEffect(() => {
 		setFilterTrips(filterTripStatus(trips, tripStatus))
 	}, [trips, tripStatus])
 
-	const renderTrip: ListRenderItem<TTrip> = ({ item }) => (
-		<Animated.View style={styles.listing}>
-			<Animated.Image
-				style={styles.image}
-				src={item.room.thumbnailUrls[0]}
-			/>
+	const handleCancelTrip = async (tripId: number) => {
+		const token: any = await getValueSecureStore("token")
 
-			<Animated.View
-				style={{
-					borderBottomColor: "#00000040",
-					borderBottomWidth: 1,
-				}}
-			>
-				<Animated.Text
-					style={{
-						paddingHorizontal: 20,
-						fontFamily: "mon-sb",
-						fontSize: 20,
-						paddingBottom: 10,
-						textAlign: "left",
-						marginTop: 14,
-					}}
-				>
-					{item.room.name}
-				</Animated.Text>
-			</Animated.View>
-			<Animated.View
-				style={{
-					flexDirection: "row",
-					gap: 10,
-					marginTop: 10,
-					marginBottom: 20,
-				}}
-			>
-				<Animated.Text
-					style={{
-						flex: 1,
-						fontFamily: "mon",
-						fontSize: 16,
-						paddingHorizontal: 20,
-						textAlign: "left",
-						paddingTop: 10,
-					}}
-				>
-					{formatDate(item.startDate)} -{" "}
-					{formatDate(item.endDate)}
-				</Animated.Text>
+		if (token === null) {
+			console.error("Token is empty")
+			Alert.alert("Có lỗi", "Vui lòng đăng nhập lại")
+			return
+		}
+
+		const res = await TripAPI.cancelTrip(token, tripId)
+
+		if (res.success === false) {
+			console.error("API error: ", res.message)
+			Alert.alert("Có lỗi", res.message)
+			return
+		}
+
+		// setCancelMode((prev) => ({
+		// 	...prev,
+		// 	[tripId]: false,
+		// }))
+		setSyncList((prev) => !prev)
+
+		// Alert.alert(
+		// 	"Thành công",
+		// 	"Chuyến đi của bạn đã được hủy"
+		// )
+		ToastAndroid.show("Chuyến đi đã được hủy 😭", 3000)
+	}
+
+	const renderTrip: ListRenderItem<TTrip> = ({ item }) => {
+		return (
+			<Animated.View style={styles.listing}>
+				<Animated.Image
+					style={styles.image}
+					src={item.room.thumbnailUrls[0]}
+				/>
 
 				<Animated.View
 					style={{
-						flex: 2,
-						paddingTop: 10,
-						paddingLeft: 20,
-						paddingRight: 10,
-						borderLeftWidth: 1,
-						borderLeftColor: "#00000040",
-						flexDirection: "column",
+						borderBottomColor: "#00000040",
+						borderBottomWidth: 1,
 					}}
 				>
-					<Text
-						style={{ fontFamily: "mon-b", fontSize: 18 }}
+					<TouchableOpacity
+						onPress={() => {
+							router.push(`/listing/${item.room._id}`)
+						}}
 					>
-						{item.room.highlight}
-					</Text>
-					<View
+						<Animated.Text
+							style={{
+								paddingHorizontal: 20,
+								fontFamily: "mon-sb",
+								fontSize: 20,
+								paddingBottom: 10,
+								textAlign: "left",
+								marginTop: 14,
+							}}
+						>
+							{item.room.name}
+						</Animated.Text>
+					</TouchableOpacity>
+				</Animated.View>
+
+				<Animated.View
+					style={{
+						flexDirection: "row",
+						marginTop: 15,
+						marginBottom: 18,
+					}}
+				>
+					<Animated.View
 						style={{
-							flexDirection: "row",
-							alignItems: "center",
-							gap: 5,
-							marginTop: 5,
+							flex: 3,
+							paddingHorizontal: 20,
+							paddingTop: 3,
 						}}
 					>
 						<Text
-							style={{ fontFamily: "mon-sb", fontSize: 20 }}
+							style={{ fontFamily: "mon", fontSize: 16 }}
+						>
+							{formatDate(item.startDate)}{" "}
+							{formatDate(item.endDate)}
+						</Text>
+					</Animated.View>
+
+					<Animated.View
+						style={{
+							flex: 8,
+							paddingTop: 3,
+							paddingLeft: 20,
+							paddingRight: 10,
+							borderLeftWidth: 1,
+							borderLeftColor: "#00000040",
+							flexDirection: "column",
+						}}
+					>
+						<Text
+							style={{ fontFamily: "mon", fontSize: 16 }}
+						>
+							{`Địa chỉ: ${item.room.street}`}
+						</Text>
+
+						<Text
+							style={{
+								fontFamily: "mon",
+								fontSize: 16,
+								marginTop: 6,
+							}}
+						>
+							{`SDT: ${item.room.host?.phone}`}
+						</Text>
+
+						<Text
+							style={{
+								fontFamily: "mon",
+								fontSize: 16,
+								marginTop: 6,
+							}}
+						>
+							{`Host: ${item.room.host?.name}`}
+						</Text>
+
+						<Text
+							style={{
+								fontFamily: "mon-sb",
+								fontSize: 20,
+								marginTop: 6,
+							}}
 						>
 							{formatPriceVND(item.total)}
 						</Text>
-					</View>
+					</Animated.View>
 				</Animated.View>
+
+				{tripStatus === "UPCOMING" &&
+					!cancelMode[item._id] && (
+						<Animated.View>
+							<TouchableOpacity
+								onPress={() => {
+									setCancelMode((prev) => ({
+										...prev,
+										[item._id]: true,
+									}))
+								}}
+							>
+								<Animated.Text
+									style={{
+										paddingHorizontal: 20,
+										fontFamily: "mon",
+										fontSize: 14,
+										textAlign: "center",
+										color: Colors.white,
+										backgroundColor: Colors.slate,
+										borderRadius: 10,
+										marginBottom: 10,
+									}}
+								>
+									{"Hủy đặt phòng"}
+								</Animated.Text>
+							</TouchableOpacity>
+						</Animated.View>
+					)}
+
+				{tripStatus === "UPCOMING" &&
+					cancelMode[item._id] && (
+						<Animated.View
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								justifyContent: "center",
+								gap: 5,
+							}}
+						>
+							<TouchableOpacity
+								onPress={() => {
+									handleCancelTrip(item._id)
+								}}
+							>
+								<Animated.Text
+									style={{
+										paddingHorizontal: 20,
+										fontFamily: "mon",
+										fontSize: 14,
+										textAlign: "center",
+										color: Colors.white,
+										backgroundColor: Colors.primary,
+										borderRadius: 10,
+										marginBottom: 10,
+									}}
+								>
+									{"Xác nhận hủy"}
+								</Animated.Text>
+							</TouchableOpacity>
+
+							<TouchableOpacity
+								onPress={() => {
+									setCancelMode((prev) => ({
+										...prev,
+										[item._id]: false,
+									}))
+								}}
+							>
+								<Animated.Text
+									style={{
+										paddingHorizontal: 20,
+										fontFamily: "mon",
+										fontSize: 14,
+										textAlign: "center",
+										color: Colors.white,
+										backgroundColor: Colors.slate,
+										borderRadius: 10,
+										marginBottom: 10,
+									}}
+								>
+									{"Bỏ qua"}
+								</Animated.Text>
+							</TouchableOpacity>
+						</Animated.View>
+					)}
 			</Animated.View>
-		</Animated.View>
-	)
+		)
+	}
 
 	return (
 		<View style={defaultStyles.container}>
-			<Text
-				style={{
-					fontFamily: "damion",
-					fontSize: 40,
-					textAlign: "center",
-					marginTop: 20,
-				}}
-			>
-				Your trips
-			</Text>
+			<Text style={styles.headerPage}>Your trips</Text>
 			<FlatList
 				renderItem={renderTrip}
 				data={filterTrips}
@@ -166,17 +309,18 @@ const TripsContent = ({ trips }: Props) => {
 						</Text>
 					</View>
 				}
-				// ListHeaderComponent={
-				// 	<Text style={styles.info}>
-				// 		You are going on {trips.length} trips
-				// 	</Text>
-				// }
 			/>
 		</View>
 	)
 }
 
 const styles = StyleSheet.create({
+	headerPage: {
+		fontFamily: "damion",
+		fontSize: 40,
+		textAlign: "center",
+		marginTop: 20,
+	},
 	headerTitle: {
 		fontFamily: "damion",
 		fontSize: 40,

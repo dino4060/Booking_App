@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 
 const Trips = () => {
 	const [trips, setTrips] = useState<TTrip[]>([])
+	const [syncList, setSyncList] = useState<boolean>(false)
 
 	useEffect(() => {
 		const getTripsByUserId = async () => {
@@ -31,7 +32,7 @@ const Trips = () => {
 		}
 
 		getTripsByUserId()
-	}, [])
+	}, [syncList])
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
@@ -42,7 +43,10 @@ const Trips = () => {
 					}}
 				></Stack.Screen>
 
-				<TripsContent trips={trips} />
+				<TripsContent
+					trips={trips}
+					setSyncList={setSyncList}
+				/>
 			</SafeAreaView>
 		</GestureHandlerRootView>
 	)
