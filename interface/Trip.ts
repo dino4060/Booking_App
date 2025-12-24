@@ -15,10 +15,22 @@ export const TripStatusList: TTripStatus[] = [
 ]
 
 export const TripStatusMap = {
-	UPCOMING: "UPCOMING",
-	ONGOING: "ONGOING",
-	ENDED: "ENDED",
-	CANCELED: "CANCELED",
+	UPCOMING: {
+		name: "UPCOMING",
+		display: "Sắp đến",
+	},
+	ONGOING: {
+		name: "ONGOING",
+		display: "Đang diễn ra",
+	},
+	ENDED: {
+		name: "ENDED",
+		display: "Đã kết thúc",
+	},
+	CANCELED: {
+		name: "CANCELED",
+		display: "Đã hủy",
+	},
 }
 
 export type TTrip = {

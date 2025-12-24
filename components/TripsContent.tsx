@@ -3,6 +3,7 @@ import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
 import {
 	TripStatusList,
+	TripStatusMap,
 	TTrip,
 	TTripStatus,
 } from "@/interface/Trip"
@@ -60,16 +61,7 @@ const TripsContent = ({ trips, setSyncList }: Props) => {
 			return
 		}
 
-		// setCancelMode((prev) => ({
-		// 	...prev,
-		// 	[tripId]: false,
-		// }))
 		setSyncList((prev) => !prev)
-
-		// Alert.alert(
-		// 	"Thành công",
-		// 	"Chuyến đi của bạn đã được hủy"
-		// )
 		ToastAndroid.show("Chuyến đi đã được hủy 😭", 3000)
 	}
 
@@ -295,8 +287,8 @@ const TripsContent = ({ trips, setSyncList }: Props) => {
 												: styles.tabTextInactive,
 										]}
 									>
-										{status.charAt(0) +
-											status.slice(1).toLowerCase()}
+										{/* {status.charAt(0) + status.slice(1).toLowerCase()} */}
+										{TripStatusMap[status].display}
 									</Text>
 								</TouchableOpacity>
 							))}
@@ -304,8 +296,11 @@ const TripsContent = ({ trips, setSyncList }: Props) => {
 
 						{/* Number info */}
 						<Text style={styles.info}>
-							You have {filterTrips.length}{" "}
-							{tripStatus.toLowerCase()} trips
+							Bạn có chuyến đi {filterTrips.length}{" "}
+							{/* {tripStatus.toLowerCase()} */}
+							{TripStatusMap[
+								tripStatus
+							].display.toLowerCase()}
 						</Text>
 					</View>
 				}

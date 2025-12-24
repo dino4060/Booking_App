@@ -18,7 +18,7 @@ export const TripAPI = {
 				"/api/trips",
 				{
 					_id: tripId,
-					status: TripStatusMap.CANCELED,
+					status: TripStatusMap.CANCELED.name,
 				},
 				{
 					headers: {
