@@ -1,5 +1,5 @@
 import { InternetException } from "@/assets/data/default"
-import { ApiRes, TApiResFail } from "@/interface/API"
+import { TApiRes, TApiResFail } from "@/interface/Base"
 import { Room } from "@/interface/Room"
 import { SearchOptions } from "@/interface/SearchOptions"
 import { axiosClient } from "./AxiosClient"
@@ -12,7 +12,7 @@ export const RoomAPI = {
 			const response = await axiosClient.get(
 				"/api/public/rooms"
 			)
-			return response.data as ApiRes<Room[]>
+			return response.data as TApiRes<Room[]>
 		} catch (error: any) {
 			console.error(error)
 			if (error.response) {
@@ -27,7 +27,7 @@ export const RoomAPI = {
 			const response = await axiosClient.get(
 				`/api/public/rooms/${id}`
 			)
-			return response.data as ApiRes<Room>
+			return response.data as TApiRes<Room>
 		} catch (error: any) {
 			console.error(error)
 			if (error.response) {

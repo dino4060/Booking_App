@@ -10,4 +10,4 @@ export type TApiResFail = {
 	message: string
 }
 
-export type ApiRes<T> = TApiResSuccess<T> | TApiResFail
+export type TApiRes<T> = TApiResSuccess<T> | TApiResFail

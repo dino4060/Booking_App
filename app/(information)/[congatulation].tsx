@@ -43,7 +43,6 @@ const Congatulation = () => {
 					{congatulation}
 				</Text>
 
-				{/* Container cho 2 nút nằm ngang */}
 				<View
 					style={{
 						flexDirection: "row",
@@ -51,14 +50,13 @@ const Congatulation = () => {
 						paddingHorizontal: 20,
 					}}
 				>
-					{/* Nút Back to home */}
 					<TouchableOpacity
 						onPress={() => {
 							router.push("/")
 						}}
 						style={{
 							...defaultStyles.btn,
-							flex: 1, // Để 2 nút có độ rộng tương đương nhau
+							flex: 1,
 							backgroundColor: "#111827",
 							flexDirection: "row",
 							alignItems: "center",
@@ -76,10 +74,9 @@ const Congatulation = () => {
 						</Text>
 					</TouchableOpacity>
 
-					{/* Nút Your Trips */}
 					<TouchableOpacity
 						onPress={() => {
-							router.push("/trips") // Cập nhật path theo route của bạn
+							router.push("/trips")
 						}}
 						style={{
 							...defaultStyles.btn,
@@ -101,30 +98,6 @@ const Congatulation = () => {
 						</Text>
 					</TouchableOpacity>
 				</View>
-				{/* <TouchableOpacity
-					onPress={() => {
-						router.push("/")
-					}}
-					style={{
-						...defaultStyles.btn,
-						marginTop: 10,
-						width: 200,
-						backgroundColor: "#111827",
-						flexDirection: "row",
-						alignItems: "center",
-						gap: 5,
-					}}
-				>
-					<Ionicons
-						name='log-in-outline'
-						size={25}
-						color='white'
-					/>
-
-					<Text style={defaultStyles.btnText}>
-						Back to home
-					</Text>
-				</TouchableOpacity> */}
 			</View>
 		</GestureHandlerRootView>
 	)

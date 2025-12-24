@@ -1,5 +1,5 @@
 import { InternetException } from "@/assets/data/default"
-import { ApiRes, TApiResFail } from "@/interface/API"
+import { TApiRes, TApiResFail } from "@/interface/Base"
 import { axiosClient } from "./AxiosClient"
 
 export const BookingAPI = {
@@ -26,7 +26,7 @@ export const BookingAPI = {
 					},
 				}
 			)
-			return response.data as ApiRes<any>
+			return response.data as TApiRes<any>
 		} catch (error: any) {
 			console.error(error)
 			if (error.response) {

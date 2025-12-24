@@ -1,4 +1,4 @@
-import { TApiResFail } from "@/interface/API"
+import { TApiResFail } from "@/interface/Base"
 
 export const InternetException: TApiResFail = {
 	success: false,

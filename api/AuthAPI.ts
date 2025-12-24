@@ -1,5 +1,5 @@
 import { InternetException } from "@/assets/data/default"
-import { ApiRes, TApiResFail } from "@/interface/API"
+import { TApiRes, TApiResFail } from "@/interface/Base"
 import { TAuth } from "@/interface/User"
 import { axiosClient } from "./AxiosClient"
 
@@ -20,7 +20,7 @@ export const AuthAPI = {
 					},
 				}
 			)
-			return response.data as ApiRes<TAuth>
+			return response.data as TApiRes<TAuth>
 		} catch (error: any) {
 			if (error.response) {
 				console.error("BE error:", error.response.message)
@@ -52,7 +52,7 @@ export const AuthAPI = {
 					},
 				}
 			)
-			return response.data as ApiRes<TAuth>
+			return response.data as TApiRes<TAuth>
 		} catch (error: any) {
 			if (error.response) {
 				console.error("BE error:", error.response.message)
