@@ -1,28 +1,52 @@
-import WishList from "@/components/WishList"
-import { Wishlist } from "@/interface/Wishlist"
-import { WishlistHandle } from "@/utils/Function"
-import { Stack, useFocusEffect } from "expo-router"
-import React, {
-	useCallback,
-	useState
-} from "react"
-import { View } from "react-native"
+import { WishlistAPI } from "@/api/WishlistAPI"
+import WishList from "@/components/WishListContent"
+import { TLikedRoom } from "@/interface/Wishlist"
+import { useUserStore } from "@/store/useUserStore"
+import { router, Stack, useFocusEffect } from "expo-router"
+import React, { useCallback, useState } from "react"
+import { Alert, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { SafeAreaView } from "react-native-safe-area-context"
 
 const Wishlists = () => {
-	const [list, setList] = useState([])
+	const user = useUserStore((state) => state.user)
+	const [list, setList] = useState<TLikedRoom[]>([])
+	const [count, setCount] = useState<number>(0)
+
+	// useEffect(() => {
+	// 	if (user.isLogin === false) {
+	// 		router.push("/login")
+	// 	}
+	// 	paginateWishlist()
+	// }, [user])
 
 	useFocusEffect(
 		useCallback(() => {
-			init()
-		}, [])
+			if (user.isLogin === false) {
+				router.push("/login")
+			}
+
+			const paginateWishlist = async () => {
+				if (user.isLogin === false) {
+					return
+				}
+				const res = await WishlistAPI.paginateRooms()
+
+				if (res.success === false) {
+					console.error("API error: ", res.message)
+					Alert.alert("Có lỗi", res.message)
+					return
+				}
+				console.log(res.data)
+
+				setList(res.data.items)
+				setCount(res.data.totalItems)
+			}
+
+			paginateWishlist()
+		}, [user])
 	)
-	const init = async () => {
-		const res: Wishlist[] =
-			await WishlistHandle.getWishList()
-		setList(res as any)
-	}
+
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<SafeAreaView style={{ flex: 1 }}>
@@ -32,7 +56,7 @@ const Wishlists = () => {
 					}}
 				></Stack.Screen>
 
-				<WishList listings={list} />
+				<WishList list={list} count={count} />
 			</SafeAreaView>
 		</GestureHandlerRootView>
 	)

@@ -1,8 +1,8 @@
+import { WishlistAPI } from "@/api/WishlistAPI"
 import { HostAvatarUrl } from "@/assets/data/default"
 import Colors from "@/constants/Colors"
 import { TRoom } from "@/interface/Room"
-import { Wishlist } from "@/interface/Wishlist"
-import { WishlistHandle } from "@/utils/Function"
+import { useUserStore } from "@/store/useUserStore"
 import { formatPriceVND } from "@/utils/number.util"
 import { Ionicons } from "@expo/vector-icons"
 import AntDesign from "@expo/vector-icons/AntDesign"
@@ -19,6 +19,7 @@ import React, {
 	useState,
 } from "react"
 import {
+	Alert,
 	ListRenderItem,
 	StyleSheet,
 	Text,
@@ -32,7 +33,6 @@ import Animated, {
 
 interface Props {
 	listings: any[]
-	// refresh: number
 	category: string
 }
 
@@ -40,8 +40,26 @@ const ListingContent = ({
 	listings: roomItems,
 	category,
 }: Props) => {
+	const user = useUserStore((state) => state.user)
 	const [loading, setLoading] = useState<boolean>(false)
-	const [listLove, setListLove] = useState<any>([])
+	const [likedRoomIdSet, setLikedRoomIdSet] = useState<
+		Set<number>
+	>(new Set())
+	const isProcessLoveButton = useRef(false)
+	const addLikedRoomIdSet = (roomId: number) => {
+		setLikedRoomIdSet((prev) => {
+			const next = new Set(prev)
+			next.add(roomId)
+			return next
+		})
+	}
+	const deleteLikedRoomIdSet = (roomId: number) => {
+		setLikedRoomIdSet((prev) => {
+			const next = new Set(prev)
+			next.delete(roomId)
+			return next
+		})
+	}
 
 	useEffect(() => {
 		setLoading(true)
@@ -53,41 +71,69 @@ const ListingContent = ({
 
 	useFocusEffect(
 		useCallback(() => {
-			handleWishlist()
-		}, [])
+			if (user.isLogin === false) {
+				setLikedRoomIdSet(new Set())
+				return
+			}
+
+			const listLikedRoomIds = async () => {
+				const res = await WishlistAPI.listRooms()
+				if (res.success === false) {
+					console.error("API error: ", res.message)
+					Alert.alert("Có lỗi", res.message)
+					return
+				}
+				setLikedRoomIdSet(
+					new Set(
+						res.data.map((likedRoom) => likedRoom.room._id)
+					)
+				)
+			}
+			listLikedRoomIds()
+		}, [user])
 	)
-	const handleLoveButtonClick = async (room_id: string) => {
-		// get state of this button
-		console.log("click on: ", room_id)
-		const checkType = listLove.includes(room_id)
-			? "remove"
-			: "add"
-		if (checkType === "add") {
-			// call api add
-			await WishlistHandle.addToWishList(room_id)
-			//remove list love
-			setListLove((pre: string[]) => [...pre, room_id])
-		} else {
-			// call api remove
-			await WishlistHandle.removeFromWishList(room_id)
-			//reload list love
-			let newList = [...listLove]
-			newList = newList.filter((x: string) => x != room_id)
-			setListLove(newList)
+
+	const handleClickLoveButton = async (
+		roomIdString: string
+	) => {
+		if (isProcessLoveButton.current === true) return
+
+		try {
+			isProcessLoveButton.current = true
+
+			const roomId = Number(roomIdString)
+			const isLikedRoom = likedRoomIdSet.has(roomId)
+
+			if (isLikedRoom === false) {
+				addLikedRoomIdSet(roomId)
+				const res = await WishlistAPI.likeRoom(roomId)
+
+				if (res.success === false) {
+					console.error("API error: ", res.message)
+					Alert.alert("Có lỗi", res.message)
+					deleteLikedRoomIdSet(roomId)
+				}
+			} else {
+				deleteLikedRoomIdSet(roomId)
+				const res = await WishlistAPI.unlikeRoom(roomId)
+
+				if (res.success === false) {
+					console.error("API error: ", res.message)
+					Alert.alert("Có lỗi", res.message)
+					addLikedRoomIdSet(roomId)
+				}
+			}
+		} catch (error) {
+			console.error("Click love button error: ", error)
+		} finally {
+			isProcessLoveButton.current = false
 		}
 	}
 
-	const handleWishlist = async () => {
-		const res: Wishlist[] =
-			await WishlistHandle.getWishList()
-		const idList = res.map((x) => x.room._id)
-		setListLove(idList)
-	}
-
 	const renderRoomItem: ListRenderItem<TRoom> = ({
-		item,
+		item: room,
 	}) => (
-		<Link href={`/listing/${item._id}`} asChild>
+		<Link href={`/listing/${room._id}`} asChild>
 			<TouchableOpacity>
 				<Animated.View
 					style={styles.listing}
@@ -96,13 +142,13 @@ const ListingContent = ({
 				>
 					<Animated.Image
 						source={{
-							uri: item.thumbnailUrls?.[0] || HostAvatarUrl,
+							uri: room.thumbnailUrls?.[0] || HostAvatarUrl,
 						}}
 						style={styles.image}
 					/>
 					<TouchableOpacity
 						onPress={() =>
-							handleLoveButtonClick(String(item._id))
+							handleClickLoveButton(String(room._id))
 						}
 						style={{
 							position: "absolute",
@@ -110,7 +156,7 @@ const ListingContent = ({
 							top: 30,
 						}}
 					>
-						{listLove.includes(item._id) ? (
+						{likedRoomIdSet.has(room._id) ? (
 							<AntDesign
 								name='heart'
 								size={24}
@@ -118,9 +164,9 @@ const ListingContent = ({
 							/>
 						) : (
 							<Ionicons
-								name='heart-outline'
+								name='heart'
 								size={24}
-								color='#000'
+								color={Colors.white}
 							/>
 						)}
 					</TouchableOpacity>
@@ -133,18 +179,18 @@ const ListingContent = ({
 						<Text
 							style={{ fontSize: 16, fontFamily: "mon-sb" }}
 						>
-							{item.name}
+							{room.name}
 						</Text>
 						<View style={{ flexDirection: "row", gap: 4 }}>
 							<Ionicons name='star' size={16} />
 						</View>
 					</View>
 					<Text style={{ fontFamily: "mon" }}>
-						{item.roomType}
+						{room.roomType}
 					</Text>
 					<View style={{ flexDirection: "row", gap: 4 }}>
 						<Text style={{ fontFamily: "mon-sb" }}>
-							{formatPriceVND(item.price)}
+							{formatPriceVND(room.price)}
 						</Text>
 						<Text style={{ fontFamily: "mon" }}>2 đêm</Text>
 					</View>

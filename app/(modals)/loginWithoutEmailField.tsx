@@ -137,6 +137,20 @@ const LoginWithoutEmailField = () => {
 						Dùng email khác 🤔?
 					</Text>
 				</TouchableOpacity>
+
+				<TouchableOpacity
+					onPress={async () => {
+						router.push("/")
+					}}
+					style={{
+						...defaultStyles.btnCustom_1,
+						marginTop: 15,
+					}}
+				>
+					<Text style={defaultStyles.btnText}>
+						Không login
+					</Text>
+				</TouchableOpacity>
 			</View>
 		</SafeAreaView>
 	)

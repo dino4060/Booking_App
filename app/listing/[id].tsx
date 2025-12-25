@@ -1,11 +1,10 @@
 import { RoomAPI } from "@/api/RoomAPI"
+import { WishlistAPI } from "@/api/WishlistAPI"
 import { HostAvatarUrl } from "@/assets/data/default"
 import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
 import { TRoom } from "@/interface/Room"
-import { Wishlist } from "@/interface/Wishlist"
 import { getValueSecureStore } from "@/store/SecureStore"
-import { WishlistHandle } from "@/utils/Function"
 import {
 	formatExperienceInfo,
 	formatPriceVND,
@@ -22,6 +21,7 @@ import React, {
 	useState,
 } from "react"
 import {
+	Alert,
 	Dimensions,
 	Image,
 	Share,
@@ -43,22 +43,46 @@ const { width } = Dimensions.get("window")
 const IMG_HEIGHT = 340
 
 const DetailsPage = () => {
-	const { id: room_id } = useLocalSearchParams()
+	const { id: roomId } = useLocalSearchParams()
 	const [homeStay, setHomeStay] = useState<TRoom>()
 	const navigation = useNavigation()
 	const scrollRef = useAnimatedRef<Animated.ScrollView>()
-	const [type, setType] = useState<string>()
-
-	const getRoom = async (id: number) => {
-		const res = await RoomAPI.getRoom(id)
-		if (res.success == false) return
-		setHomeStay(res.data || ({} as TRoom))
-	}
+	const [isLikedRoom, setIsLikedRoom] = useState<boolean>()
 
 	useEffect(() => {
-		getRoom(Number(room_id))
-		handleWishlist()
+		const getRoom = async (id: number) => {
+			const res = await RoomAPI.getRoom(id)
+			if (res.success == false) {
+				console.error("API error: ", res.message)
+				Alert.alert("Có lỗi", res.message)
+				return
+			}
+			setHomeStay(res.data)
+		}
+
+		const hasLikeRoom = async (roomId: number) => {
+			const res = await WishlistAPI.hasLikeRoom(roomId)
+			if (res.success === false) {
+				console.error("API error: ", res.message)
+				Alert.alert("Có lỗi", res.message)
+				return
+			}
+			setIsLikedRoom(res.data)
+		}
+
+		getRoom(Number(roomId))
+		hasLikeRoom(Number(roomId))
 	}, [])
+
+	const handleClickLoveButton = async () => {
+		if (isLikedRoom === false) {
+			await WishlistAPI.likeRoom(Number(roomId))
+			setIsLikedRoom(true)
+		} else {
+			await WishlistAPI.unlikeRoom(Number(roomId))
+			setIsLikedRoom(false)
+		}
+	}
 
 	const shareRoom = async () => {
 		try {
@@ -69,34 +93,6 @@ const DetailsPage = () => {
 		} catch (err) {
 			console.log(err)
 		}
-	}
-
-	const handleLoveButtonClick = async () => {
-		console.log("click on: ", room_id)
-		console.log("type: ", type)
-		if (type == "no") {
-			// call api add
-			await WishlistHandle.addToWishList(room_id as string)
-			//remove list love
-			setType("yes")
-		} else {
-			// call api remove
-			await WishlistHandle.removeFromWishList(
-				room_id as string
-			)
-			setType("no")
-		}
-	}
-
-	const handleWishlist = async () => {
-		const res: Wishlist[] =
-			await WishlistHandle.getWishList()
-		const idList = res.map((x) => x.room._id)
-		const checkExit = idList.includes(Number(room_id))
-			? "yes"
-			: "no"
-		console.log("check exit: ", checkExit)
-		setType(checkExit)
 	}
 
 	const handleReserveRoom = async () => {
@@ -219,10 +215,10 @@ const DetailsPage = () => {
 					>
 						<Ionicons name='star' size={16} />
 						<TouchableOpacity
-							onPress={handleLoveButtonClick}
+							onPress={handleClickLoveButton}
 							style={styles.roundButton}
 						>
-							{type == "yes" ? (
+							{isLikedRoom === true ? (
 								<AntDesign
 									name='heart'
 									size={24}
@@ -230,9 +226,9 @@ const DetailsPage = () => {
 								/>
 							) : (
 								<Ionicons
-									name='heart-outline'
+									name='heart'
 									size={24}
-									color='#000'
+									color={Colors.white}
 								/>
 							)}
 						</TouchableOpacity>

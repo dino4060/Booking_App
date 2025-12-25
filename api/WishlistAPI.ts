@@ -5,11 +5,17 @@ import {
 	TPageData,
 	TPageParam,
 } from "@/interface/Base"
-import { TLikedRoom } from "@/interface/Wishlist"
+import {
+	TLikedRoom,
+	TLikedRoomParam,
+} from "@/interface/Wishlist"
+import { getValueSecureStore } from "@/store/SecureStore"
 import { axiosClient } from "./AxiosClient"
 
 export const WishlistAPI = {
-	likeRoom: async (token: string, roomId: number) => {
+	likeRoom: async (roomId: number) => {
+		const token = await getValueSecureStore("token")
+
 		try {
 			const response = await axiosClient.post(
 				`/api/wish-lists/rooms/${roomId}`,
@@ -29,8 +35,9 @@ export const WishlistAPI = {
 			return InternetException
 		}
 	},
+	unlikeRoom: async (roomId: number) => {
+		const token = await getValueSecureStore("token")
 
-	unlikeRoom: async (token: string, roomId: number) => {
 		try {
 			const response = await axiosClient.delete(
 				`/api/wish-lists/rooms/${roomId}`,
@@ -49,11 +56,30 @@ export const WishlistAPI = {
 			return InternetException
 		}
 	},
+	hasLikeRoom: async (roomId: number) => {
+		const token = await getValueSecureStore("token")
 
-	paginateRooms: async (
-		token: string,
-		params?: Partial<TPageParam>
-	) => {
+		try {
+			const response = await axiosClient.get(
+				`/api/wish-lists/rooms/${roomId}`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			)
+			return response.data as TApiResSuccess<boolean>
+		} catch (error: any) {
+			if (error.response) {
+				return error.response.data as TApiResFail
+			}
+			return InternetException
+		}
+	},
+	paginateRooms: async (params?: Partial<TPageParam>) => {
+		const token = await getValueSecureStore("token")
+
 		try {
 			const response = await axiosClient.get(
 				"/api/wish-lists/rooms",
@@ -73,6 +99,31 @@ export const WishlistAPI = {
 			return response.data as TApiResSuccess<
 				TPageData<TLikedRoom>
 			>
+		} catch (error: any) {
+			if (error.response) {
+				return error.response.data as TApiResFail
+			}
+			return InternetException
+		}
+	},
+	listRooms: async (params?: TLikedRoomParam) => {
+		const token = await getValueSecureStore("token")
+
+		try {
+			const response = await axiosClient.get(
+				"/api/wish-lists/rooms",
+				{
+					params: {
+						"non-page": true,
+						destination: params?.destination || "Đà Lạt",
+					},
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			)
+			return response.data as TApiResSuccess<TLikedRoom[]>
 		} catch (error: any) {
 			if (error.response) {
 				return error.response.data as TApiResFail

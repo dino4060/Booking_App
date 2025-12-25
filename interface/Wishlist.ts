@@ -1,3 +1,4 @@
+import { TPageParam } from "./Base"
 import { TRoomShort } from "./Room"
 
 export type TLikedRoom = {
@@ -6,4 +7,9 @@ export type TLikedRoom = {
 	updatedAt: string
 	isDeleted: boolean
 	room: TRoomShort
+}
+
+export type TLikedRoomParam = TPageParam & {
+	nonPage?: boolean
+	destination?: string
 }

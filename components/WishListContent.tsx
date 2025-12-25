@@ -1,6 +1,6 @@
 import { defaultStyles } from "@/constants/Style"
-import { TRoom } from "@/interface/Room"
-import { Wishlist } from "@/interface/Wishlist"
+import { TLikedRoom } from "@/interface/Wishlist"
+import { formatPriceVND } from "@/utils/number.util"
 import { Link } from "expo-router"
 import {
 	FlatList,
@@ -16,11 +16,12 @@ import Animated, {
 } from "react-native-reanimated"
 
 interface Props {
-	listings: TRoom[]
+	list: TLikedRoom[]
+	count: number
 }
 
-const Listings = ({ listings: items }: Props) => {
-	const renderRow: ListRenderItem<Wishlist> = ({
+const WishlistContent = ({ list: items, count }: Props) => {
+	const renderRow: ListRenderItem<TLikedRoom> = ({
 		item,
 	}) => (
 		<Link href={`/listing/${item.room._id}`} asChild>
@@ -33,7 +34,7 @@ const Listings = ({ listings: items }: Props) => {
 					<Animated.Image
 						source={{
 							uri:
-								(item?.room.thumbnail_urls as any) ||
+								item.room.thumbnailUrls?.[0] ||
 								"https://via.assets.so/img.jpg?w=400&h=150&tc=blue&bg=#cecece",
 						}}
 						style={styles.image}
@@ -43,6 +44,7 @@ const Listings = ({ listings: items }: Props) => {
 						style={{
 							flexDirection: "row",
 							justifyContent: "space-between",
+							marginTop: 3,
 						}}
 					>
 						<Text
@@ -56,16 +58,25 @@ const Listings = ({ listings: items }: Props) => {
 							{item.room.name}
 						</Text>
 					</View>
+
 					<View>
-						<Text style={{ fontFamily: "mon" }}>
-							{item.room.room_type}
+						<Text
+							style={{
+								fontFamily: "mon",
+								textAlign: "center",
+							}}
+						>
+							{item.room.roomType}
 						</Text>
+					</View>
+
+					<View>
 						<View style={{ flexDirection: "row", gap: 4 }}>
 							<Text style={{ fontFamily: "mon-sb" }}>
-								€ {item.room.price}
+								{formatPriceVND(item.room.price)}
 							</Text>
 							<Text style={{ fontFamily: "mon" }}>
-								night
+								/ 2 đêm
 							</Text>
 						</View>
 					</View>
@@ -73,17 +84,16 @@ const Listings = ({ listings: items }: Props) => {
 					<View
 						style={{
 							width: "auto",
-
 							borderColor: "#cccccc",
 							borderWidth: 1,
 							borderRadius: 20,
 							paddingHorizontal: 30,
-
 							paddingVertical: 10,
+							maxWidth: 350,
 						}}
 					>
 						<Text style={{ fontFamily: "mon" }}>
-							{item.room.summary}
+							{item.room.highlight}
 						</Text>
 					</View>
 				</Animated.View>
@@ -104,10 +114,10 @@ const Listings = ({ listings: items }: Props) => {
 			</Text>
 			<FlatList
 				renderItem={renderRow}
-				data={items as any}
+				data={items}
 				ListHeaderComponent={
 					<Text style={styles.info}>
-						{items.length} homes
+						Bạn đã yêu thích {count} phòng
 					</Text>
 				}
 			/>
@@ -118,7 +128,7 @@ const Listings = ({ listings: items }: Props) => {
 const styles = StyleSheet.create({
 	listing: {
 		padding: 16,
-		gap: 10,
+		gap: 5,
 		flexDirection: "column",
 
 		alignItems: "center",
@@ -137,4 +147,4 @@ const styles = StyleSheet.create({
 	},
 })
 
-export default Listings
+export default WishlistContent
