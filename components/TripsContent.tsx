@@ -6,7 +6,7 @@ import {
 	TripStatusMap,
 	TTrip,
 	TTripStatus,
-} from "@/interface/Trip"
+} from "@/interface/TripType"
 import { getValueSecureStore } from "@/store/SecureStore"
 import { formatPriceVND } from "@/utils/number.util"
 import { router } from "expo-router"

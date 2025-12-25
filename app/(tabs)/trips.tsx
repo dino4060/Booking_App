@@ -1,6 +1,6 @@
 import { TripAPI } from "@/api/TripAPI"
 import TripsContent from "@/components/TripsContent"
-import { TTrip } from "@/interface/Trip"
+import { TTrip } from "@/interface/TripType"
 import { getValueSecureStore } from "@/store/SecureStore"
 import { Stack } from "expo-router"
 import React, { useEffect, useState } from "react"

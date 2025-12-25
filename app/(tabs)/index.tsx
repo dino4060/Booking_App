@@ -2,41 +2,37 @@ import { RoomAPI } from "@/api/RoomAPI"
 import ExploreHeader from "@/components/ExploreHeader"
 import ListingContent from "@/components/ListingContent"
 import ListingMap from "@/components/ListingMap"
-import { SearchOptions } from "@/interface/SearchOptions"
+import {
+	DestinationList,
+	TDestination,
+	TRoomParam,
+} from "@/interface/RoomType"
 import { useHomestayStore } from "@/store/useHomestayStore"
 import { Stack } from "expo-router"
 import { useEffect, useState } from "react"
-import { StyleSheet, View } from "react-native"
+import { Alert, StyleSheet, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 
 const HomePage = () => {
-	const [category, setCategory] =
-		useState<string>("Tiny homes")
-
-	const onDataChanged = (category: string) => {
-		setCategory(category)
-	}
-
-	// useEffect(() => {
-	// 	const roomQuery = {
-	// 		room_type: category,
-	// 	} as any
-	// 	getInitialRoom(roomQuery)
-	// }, [category])
-
+	const [destination, setDestination] =
+		useState<TDestination>(DestinationList[1])
 	const { homeStayList, updateHomestayList } =
 		useHomestayStore()
 
 	useEffect(() => {
-		getRooms()
-	}, [])
+		listRooms({
+			destination: destination.name,
+		})
+	}, [destination])
 
-	const getRooms = async (
-		roomQuery: SearchOptions = {} as any
-	) => {
-		const res = (await RoomAPI.listRooms(roomQuery)) || []
-		if (res.success == false) return
-		updateHomestayList(res.data || [])
+	const listRooms = async (roomParam?: TRoomParam) => {
+		const res = (await RoomAPI.listRooms(roomParam)) || []
+		if (res.success === false) {
+			console.error("API error: ", res.message)
+			Alert.alert("Có lỗi", res.message)
+			return
+		}
+		updateHomestayList(res.data)
 	}
 
 	return (
@@ -44,7 +40,7 @@ const HomePage = () => {
 			<View
 				style={{
 					flex: 1,
-					marginTop: 180,
+					marginTop: 165,
 					backgroundColor: "#fff",
 				}}
 			>
@@ -52,17 +48,21 @@ const HomePage = () => {
 					options={{
 						header: () => (
 							<ExploreHeader
-								onCategoryChanged={onDataChanged}
+								destination={destination}
+								setDestination={setDestination}
 							/>
 						),
 					}}
 				/>
 
-				<ListingMap listings={homeStayList} />
+				<ListingMap
+					listings={homeStayList}
+					destination={destination}
+				/>
 
 				<ListingContent
 					listings={homeStayList}
-					category={category}
+					destination={destination}
 				/>
 			</View>
 		</GestureHandlerRootView>

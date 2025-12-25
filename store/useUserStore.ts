@@ -1,4 +1,4 @@
-import { User } from "@/interface/User"
+import { User } from "@/interface/UserType"
 import { create } from "zustand"
 
 type State = {

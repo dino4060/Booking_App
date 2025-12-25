@@ -24,7 +24,7 @@ import Animated, {
 
 import { BookingAPI } from "@/api/BookingAPI"
 import { RoomAPI } from "@/api/RoomAPI"
-import { TRoom } from "@/interface/Room"
+import { TRoom } from "@/interface/RoomType"
 import { getValueSecureStore } from "@/store/SecureStore"
 import { formatPriceVND } from "@/utils/number.util"
 import { UtilFunction } from "@/utils/utilFunction"

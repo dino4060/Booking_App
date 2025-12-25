@@ -1,6 +1,6 @@
 import { WishlistAPI } from "@/api/WishlistAPI"
 import WishList from "@/components/WishListContent"
-import { TLikedRoom } from "@/interface/Wishlist"
+import { TLikedRoom } from "@/interface/WishlistType"
 import { useUserStore } from "@/store/useUserStore"
 import { router, Stack, useFocusEffect } from "expo-router"
 import React, { useCallback, useState } from "react"
@@ -59,7 +59,12 @@ const Wishlists = () => {
 					}}
 				></Stack.Screen>
 
-				<WishList list={list} count={count} likedRoomIdSet={likedRoomIdSet} setLikedRoomIdSet={setLikedRoomIdSet} />
+				<WishList
+					list={list}
+					count={count}
+					likedRoomIdSet={likedRoomIdSet}
+					setLikedRoomIdSet={setLikedRoomIdSet}
+				/>
 			</SafeAreaView>
 		</GestureHandlerRootView>
 	)

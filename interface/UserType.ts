@@ -1,4 +1,4 @@
-import { TRoom } from "./Room"
+import { TRoom } from "./RoomType"
 
 export interface User {
 	_id: string
@@ -11,7 +11,7 @@ export interface User {
 	isLogin: boolean
 }
 
-export interface Host {
+export interface THost {
 	user: User
 	hostedList: TRoom[]
 }

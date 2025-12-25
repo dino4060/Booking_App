@@ -1,4 +1,4 @@
-import { TRoom } from "@/interface/Room"
+import { TRoom } from "@/interface/RoomType"
 import { create } from "zustand"
 
 type State = {

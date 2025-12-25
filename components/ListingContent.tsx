@@ -1,7 +1,7 @@
 import { WishlistAPI } from "@/api/WishlistAPI"
 import { HostAvatarUrl } from "@/assets/data/default"
 import Colors from "@/constants/Colors"
-import { TRoom } from "@/interface/Room"
+import { TDestination, TRoom } from "@/interface/RoomType"
 import { useUserStore } from "@/store/useUserStore"
 import { formatPriceVND } from "@/utils/number.util"
 import { Ionicons } from "@expo/vector-icons"
@@ -31,13 +31,13 @@ import Animated, {
 } from "react-native-reanimated"
 
 interface Props {
-	listings: any[]
-	category: string
+	listings: TRoom[]
+	destination: TDestination
 }
 
 const ListingContent = ({
 	listings: roomItems,
-	category,
+	destination,
 }: Props) => {
 	const user = useUserStore((state) => state.user)
 	const [loading, setLoading] = useState<boolean>(false)
@@ -66,7 +66,7 @@ const ListingContent = ({
 		setTimeout(() => {
 			setLoading(false)
 		}, 200)
-	}, [category])
+	}, [destination])
 
 	useFocusEffect(
 		useCallback(() => {
@@ -231,7 +231,7 @@ const ListingContent = ({
 						</TouchableOpacity>
 
 						<Text style={styles.info}>
-							{roomItems.length} homes
+							Tìm được {roomItems.length} nơi lưu trú
 						</Text>
 					</Fragment>
 				}
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
 	listing: {
 		padding: 16,
 		gap: 10,
-		marginVertical: 16,
+		marginBottom: 26,
 	},
 	image: {
 		width: "100%",
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		fontFamily: "mon-sb",
 		fontSize: 16,
-		marginTop: 4,
+		marginBottom: 5,
 	},
 	container: {
 		flex: 1,
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
 		width: 100,
 		borderTopRightRadius: 15,
 		borderBottomRightRadius: 15,
-		marginBottom: 20,
+		marginBottom: 5,
 	},
 	reelsText: {
 		textAlign: "center",

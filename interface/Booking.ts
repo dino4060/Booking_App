@@ -1,4 +1,4 @@
-import { TRoom } from "./Room"
+import { TRoom } from "./RoomType"
 
 export interface Booking {
 	__v: number

@@ -3,7 +3,7 @@ import {
 	TApiResFail,
 	TApiResSuccess,
 } from "@/interface/Base"
-import { TripStatusMap, TTrip } from "@/interface/Trip"
+import { TripStatusMap, TTrip } from "@/interface/TripType"
 import { axiosClient } from "./AxiosClient"
 
 export const TripAPI = {

@@ -1,6 +1,6 @@
 import Colors from "@/constants/Colors"
-import { TRoom } from "@/interface/Room"
-import { Host } from "@/interface/User"
+import { TRoom } from "@/interface/RoomType"
+import { THost } from "@/interface/UserType"
 import { Ionicons } from "@expo/vector-icons"
 import {
 	Link,
@@ -42,7 +42,7 @@ const DetailPage = () => {
 	const navigation = useNavigation()
 	const { id: hostID } = useLocalSearchParams()
 	const { user } = useUserStore()
-	const [host, setHost] = useState<Host>()
+	const [host, setHost] = useState<THost>()
 	useEffect(() => {
 		getHostInfo(hostID as string)
 	}, [])

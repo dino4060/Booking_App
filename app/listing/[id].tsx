@@ -3,7 +3,7 @@ import { WishlistAPI } from "@/api/WishlistAPI"
 import { HostAvatarUrl } from "@/assets/data/default"
 import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
-import { TRoom } from "@/interface/Room"
+import { TRoom } from "@/interface/RoomType"
 import { getValueSecureStore } from "@/store/SecureStore"
 import {
 	formatExperienceInfo,
@@ -52,7 +52,7 @@ const DetailsPage = () => {
 	useEffect(() => {
 		const getRoom = async (id: number) => {
 			const res = await RoomAPI.getRoom(id)
-			if (res.success == false) {
+			if (res.success === false) {
 				console.error("API error: ", res.message)
 				Alert.alert("Có lỗi", res.message)
 				return

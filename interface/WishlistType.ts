@@ -1,5 +1,5 @@
 import { TPageParam } from "./Base"
-import { TRoomShort } from "./Room"
+import { TRoomShort } from "./RoomType"
 
 export type TLikedRoom = {
 	_id: number

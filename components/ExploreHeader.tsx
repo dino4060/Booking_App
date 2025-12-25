@@ -1,9 +1,13 @@
 import Colors from "@/constants/Colors"
+import { TSetState } from "@/interface/Base"
+import {
+	DestinationList,
+	TDestination,
+} from "@/interface/RoomType"
 import { Ionicons, MaterialIcons } from "@expo/vector-icons"
 import * as Haptics from "expo-haptics"
 import { Link } from "expo-router"
 import React, { useRef, useState } from "react"
-
 import {
 	ScrollView,
 	StyleSheet,
@@ -14,17 +18,16 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 
 interface Props {
-	onCategoryChanged: (category: string) => void
+	destination: TDestination
+	setDestination: TSetState<TDestination>
 }
 
-const ExploreHeader = ({ onCategoryChanged }: Props) => {
+const ExploreHeader = ({
+	destination,
+	setDestination,
+}: Props) => {
 	const scrollRef = useRef<ScrollView>(null)
-	// const itemsRef = useRef<Array<TouchableOpacity | null>>(
-	// 	[]
-	// )
-	const itemsRef = useRef<Array<any | null>>(
-		[]
-	)
+	const itemsRef = useRef<Array<any | null>>([])
 	const [activeIndex, setActiveIndex] = useState(0)
 
 	const selectCategory = (index: number) => {
@@ -38,7 +41,7 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
 			})
 		})
 		Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-		onCategoryChanged(categories[index].name)
+		setDestination(DestinationList[index])
 	}
 
 	return (
@@ -51,31 +54,24 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
 								<Ionicons name='search' size={24} />
 								<View>
 									<Text style={{ fontFamily: "mon-sb" }}>
-										Where to?
-									</Text>
-									<Text
-										style={{
-											color: Colors.grey,
-											fontFamily: "mon",
-										}}
-									>
-										Anywhere · Any week
+										Tìm kiếm nơi lưu trú
 									</Text>
 								</View>
 							</View>
 						</TouchableOpacity>
 					</Link>
-
-					<TouchableOpacity style={styles.filterButton}>
-						<Ionicons
-							size={21}
-							name='color-filter-outline'
-						/>
-					</TouchableOpacity>
 				</View>
 
-				<View>
-					<ScrollView
+				<View
+					style={{
+						display: "flex",
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "space-between",
+						paddingHorizontal: 15,
+					}}
+				>
+					{/* <ScrollView
 						horizontal
 						scrollEnabled={true}
 						nestedScrollEnabled={true}
@@ -84,43 +80,45 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
 						contentContainerStyle={{
 							alignItems: "center",
 							gap: 20,
-							flex: 1,
+							// flex: 1,
 							justifyContent: "space-around",
 							paddingHorizontal: 16,
 						}}
-					>
-						{categories.map((item, index) => (
-							<TouchableOpacity
-								ref={(el: any) => (itemsRef.current[index] = el)}
-								key={index}
+					> */}
+					{DestinationList.map((item, index) => (
+						<TouchableOpacity
+							ref={(el: any) =>
+								(itemsRef.current[index] = el)
+							}
+							key={index}
+							style={
+								item.name === destination.name
+									? styles.categoriesBtnActive
+									: styles.categoriesBtn
+							}
+							onPress={() => selectCategory(index)}
+						>
+							<MaterialIcons
+								name={item.icon as any}
+								size={24}
+								color={
+									activeIndex === index
+										? Colors.dark
+										: Colors.grey
+								}
+							/>
+							<Text
 								style={
 									activeIndex === index
-										? styles.categoriesBtnActive
-										: styles.categoriesBtn
+										? styles.categoryTextActive
+										: styles.categoryText
 								}
-								onPress={() => selectCategory(index)}
 							>
-								<MaterialIcons
-									name={item.icon as any}
-									size={24}
-									color={
-										activeIndex === index
-											? "#000"
-											: Colors.grey
-									}
-								/>
-								<Text
-									style={
-										activeIndex === index
-											? styles.categoryTextActive
-											: styles.categoryText
-									}
-								>
-									{item.name}
-								</Text>
-							</TouchableOpacity>
-						))}
-					</ScrollView>
+								{item.name}
+							</Text>
+						</TouchableOpacity>
+					))}
+					{/* </ScrollView> */}
 				</View>
 			</View>
 		</SafeAreaView>
@@ -129,8 +127,8 @@ const ExploreHeader = ({ onCategoryChanged }: Props) => {
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: "#fff",
-		height: 150,
+		backgroundColor: Colors.white,
+		height: 135,
 	},
 	scrollList: {
 		width: "80%",
@@ -138,10 +136,9 @@ const styles = StyleSheet.create({
 	},
 	actionRow: {
 		flexDirection: "row",
-		justifyContent: "space-between",
+		justifyContent: "center",
 		alignItems: "center",
-		paddingHorizontal: 24,
-		paddingBottom: 16,
+		paddingVertical: 12,
 	},
 	filterButton: {
 		padding: 10,
@@ -157,19 +154,20 @@ const styles = StyleSheet.create({
 	},
 
 	searchBtn: {
-		backgroundColor: "#fff",
+		backgroundColor: Colors.white,
 		flexDirection: "row",
 		gap: 10,
 		padding: 14,
 		alignItems: "center",
-		width: 280,
+		justifyContent: "center",
+		width: 350,
 		borderWidth: StyleSheet.hairlineWidth,
 		borderColor: "#c2c2c2",
 		borderRadius: 30,
-		elevation: 2,
-		shadowColor: "#000",
-		shadowOpacity: 0.12,
-		shadowRadius: 8,
+		elevation: 10,
+		shadowColor: Colors.dark,
+		shadowOpacity: 0.15,
+		shadowRadius: 10,
 		shadowOffset: {
 			width: 1,
 			height: 1,
@@ -190,41 +188,20 @@ const styles = StyleSheet.create({
 	categoryTextActive: {
 		fontSize: 12,
 		fontFamily: "mon-sb",
-		color: "#000",
+		color: Colors.dark,
 	},
 	categoriesBtn: {
-		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
 		paddingBottom: 8,
 	},
 	categoriesBtnActive: {
-		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
-		borderBottomColor: "#000",
+		borderBottomColor: Colors.dark,
 		borderBottomWidth: 2,
 		paddingBottom: 8,
 	},
 })
 
 export default ExploreHeader
-
-const categories = [
-	{
-		name: "Tiny homes",
-		icon: "home",
-	},
-	{
-		name: "Cabins",
-		icon: "house-siding",
-	},
-	{
-		name: "Trending",
-		icon: "local-fire-department",
-	},
-	{
-		name: "Play",
-		icon: "videogame-asset",
-	},
-]

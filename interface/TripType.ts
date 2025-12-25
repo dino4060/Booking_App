@@ -1,5 +1,21 @@
-import { TRoom } from "./Room"
-import { User } from "./User"
+import { TRoom } from "./RoomType"
+import { User } from "./UserType"
+
+export type TTrip = {
+	_id: number
+	id: number
+	createdAt: string
+	updatedAt: string
+	isDeleted: boolean
+	customer: User
+	room: TRoom
+	startDate: string
+	endDate: string
+	bookingTime: string
+	total: number
+	bookedDates: string[]
+	status: TTripStatus
+}
 
 export type TTripStatus =
 	| "UPCOMING"
@@ -31,20 +47,4 @@ export const TripStatusMap = {
 		name: "CANCELED",
 		display: "Đã hủy",
 	},
-}
-
-export type TTrip = {
-	_id: number
-	id: number
-	createdAt: string
-	updatedAt: string
-	isDeleted: boolean
-	customer: User
-	room: TRoom
-	startDate: string
-	endDate: string
-	bookingTime: string
-	total: number
-	bookedDates: string[]
-	status: TTripStatus
 }

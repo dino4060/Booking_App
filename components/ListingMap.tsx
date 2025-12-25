@@ -1,9 +1,9 @@
 import LocationAPI from "@/api/LocationAPI"
 import { DMS } from "@/interface/common"
-import { TRoom } from "@/interface/Room"
+import { TDestination, TRoom } from "@/interface/RoomType"
 import { Ionicons } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import {
 	Dimensions,
 	StyleSheet,
@@ -14,24 +14,32 @@ import MapView from "react-native-map-clustering"
 import { Marker, PROVIDER_GOOGLE } from "react-native-maps"
 
 interface Props {
-	listings: any[]
+	listings: TRoom[]
+	destination: TDestination
 }
 
-const INITIAL_REGION_VIETNAM = {
-	latitude: 14.0583,
-	longitude: 108.2772,
-	latitudeDelta: 10,
-	longitudeDelta: 10,
+const CoordinateDelta = {
+	latitudeDelta: 0.15,
+	longitudeDelta: 0.15,
 }
 
-const ListingMap = ({ listings }: Props) => {
+const ListingMap = ({ listings, destination }: Props) => {
 	const router = useRouter()
 	const mapRef: any = useRef(null)
 	const [mapInitialized, setMapInitialized] =
 		useState(false)
-
 	const [searchDestination, setSearchDestination] =
 		useState<string>("")
+
+	useEffect(() => {
+		mapRef.current.animateToRegion(
+			{
+				...destination.coordinates,
+				...CoordinateDelta,
+			},
+			1500
+		)
+	}, [destination])
 
 	const onMarkSelected = (mark: TRoom) => {
 		router.push(`/listing/${mark.id}`)
@@ -64,21 +72,22 @@ const ListingMap = ({ listings }: Props) => {
 			</Marker>
 		)
 	}
-	const animatedToRegion = (la: number, long: number) => {
-		let region = {
-			latitude: la,
-			longitude: long,
-			latitudeDelta: 0.05,
-			longitudeDelta: 0.05,
-		}
-
-		mapRef.current.animateToRegion(region, 2000)
-	}
 
 	const handleSubmit = async () => {
 		const response: DMS = await LocationAPI.searchLocation(
 			searchDestination
 		)
+
+		const animatedToRegion = (la: number, long: number) => {
+			let region = {
+				latitude: la,
+				longitude: long,
+				latitudeDelta: 0.05,
+				longitudeDelta: 0.05,
+			}
+
+			mapRef.current.animateToRegion(region, 2000)
+		}
 
 		animatedToRegion(response.la, response.long)
 	}
@@ -95,7 +104,10 @@ const ListingMap = ({ listings }: Props) => {
 				provider={PROVIDER_GOOGLE}
 				showsMyLocationButton
 				renderCluster={renderCluster}
-				initialRegion={INITIAL_REGION_VIETNAM}
+				initialRegion={{
+					...destination.coordinates,
+					...CoordinateDelta,
+				}}
 			>
 				{listings.map((r: TRoom, i: number) => {
 					return (

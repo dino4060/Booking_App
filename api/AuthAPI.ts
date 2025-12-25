@@ -1,6 +1,6 @@
 import { InternetException } from "@/assets/data/default"
 import { TApiRes, TApiResFail } from "@/interface/Base"
-import { TAuth } from "@/interface/User"
+import { TAuth } from "@/interface/UserType"
 import { axiosClient } from "./AxiosClient"
 
 export const AuthAPI = {

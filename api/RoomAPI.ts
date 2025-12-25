@@ -1,16 +1,19 @@
 import { InternetException } from "@/assets/data/default"
 import { TApiRes, TApiResFail } from "@/interface/Base"
-import { TRoom } from "@/interface/Room"
-import { SearchOptions } from "@/interface/SearchOptions"
+import { TRoom, TRoomParam } from "@/interface/RoomType"
 import { axiosClient } from "./AxiosClient"
 
 export const RoomAPI = {
-	listRooms: async (
-		getRoomCondition: SearchOptions | null
-	) => {
+	listRooms: async (param?: TRoomParam) => {
 		try {
 			const response = await axiosClient.get(
-				"/api/public/rooms"
+				"/api/public/rooms",
+				{
+					params: {
+						"non-page": true,
+						destination: param?.destination,
+					},
+				}
 			)
 			return response.data as TApiRes<TRoom[]>
 		} catch (error: any) {
