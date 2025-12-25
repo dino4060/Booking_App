@@ -1,4 +1,4 @@
-import { Room } from "./Room"
+import { TRoom } from "./Room"
 import { User } from "./User"
 
 export type TTripStatus =
@@ -40,7 +40,7 @@ export type TTrip = {
 	updatedAt: string
 	isDeleted: boolean
 	customer: User
-	room: Room
+	room: TRoom
 	startDate: string
 	endDate: string
 	bookingTime: string

@@ -2,7 +2,7 @@ import { RoomAPI } from "@/api/RoomAPI"
 import { HostAvatarUrl } from "@/assets/data/default"
 import Colors from "@/constants/Colors"
 import { defaultStyles } from "@/constants/Style"
-import { Room } from "@/interface/Room"
+import { TRoom } from "@/interface/Room"
 import { Wishlist } from "@/interface/Wishlist"
 import { getValueSecureStore } from "@/store/SecureStore"
 import { WishlistHandle } from "@/utils/Function"
@@ -44,7 +44,7 @@ const IMG_HEIGHT = 340
 
 const DetailsPage = () => {
 	const { id: room_id } = useLocalSearchParams()
-	const [homeStay, setHomeStay] = useState<Room>()
+	const [homeStay, setHomeStay] = useState<TRoom>()
 	const navigation = useNavigation()
 	const scrollRef = useAnimatedRef<Animated.ScrollView>()
 	const [type, setType] = useState<string>()
@@ -52,7 +52,7 @@ const DetailsPage = () => {
 	const getRoom = async (id: number) => {
 		const res = await RoomAPI.getRoom(id)
 		if (res.success == false) return
-		setHomeStay(res.data || ({} as Room))
+		setHomeStay(res.data || ({} as TRoom))
 	}
 
 	useEffect(() => {

@@ -1,6 +1,6 @@
 import { User } from "./User"
 
-export type Room = {
+export type TRoom = {
 	// Required fields
 	_id: number
 	id: number
@@ -33,3 +33,8 @@ export type Room = {
 	smartLocation?: string | null
 	weeklyPrice?: number | null
 }
+
+export type TRoomShort = Omit<
+	TRoom,
+	"bookedDates" | "amenities"
+>

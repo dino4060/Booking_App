@@ -1,6 +1,6 @@
 import { HostAvatarUrl } from "@/assets/data/default"
 import Colors from "@/constants/Colors"
-import { Room } from "@/interface/Room"
+import { TRoom } from "@/interface/Room"
 import { Wishlist } from "@/interface/Wishlist"
 import { WishlistHandle } from "@/utils/Function"
 import { formatPriceVND } from "@/utils/number.util"
@@ -84,7 +84,7 @@ const ListingContent = ({
 		setListLove(idList)
 	}
 
-	const renderRoomItem: ListRenderItem<Room> = ({
+	const renderRoomItem: ListRenderItem<TRoom> = ({
 		item,
 	}) => (
 		<Link href={`/listing/${item._id}`} asChild>

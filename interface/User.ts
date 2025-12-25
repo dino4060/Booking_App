@@ -1,4 +1,4 @@
-import { Room } from "./Room"
+import { TRoom } from "./Room"
 
 export interface User {
 	_id: string
@@ -13,7 +13,7 @@ export interface User {
 
 export interface Host {
 	user: User
-	hostedList: Room[]
+	hostedList: TRoom[]
 }
 
 export type TAuth = {

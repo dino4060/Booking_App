@@ -1,5 +1,5 @@
 import { defaultStyles } from "@/constants/Style"
-import { Room } from "@/interface/Room"
+import { TRoom } from "@/interface/Room"
 import { Wishlist } from "@/interface/Wishlist"
 import { Link } from "expo-router"
 import {
@@ -16,7 +16,7 @@ import Animated, {
 } from "react-native-reanimated"
 
 interface Props {
-	listings: Room[]
+	listings: TRoom[]
 }
 
 const Listings = ({ listings: items }: Props) => {

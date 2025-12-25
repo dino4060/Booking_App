@@ -1,8 +1,8 @@
-import { Room } from "@/interface/Room"
+import { TRoom } from "@/interface/Room"
 import { create } from "zustand"
 
 type State = {
-	homeStayList: Room[]
+	homeStayList: TRoom[]
 }
 type Action = {
 	updateHomestayList: (room: State["homeStayList"]) => void
@@ -11,7 +11,7 @@ type Action = {
 export const useHomestayStore = create<State & Action>(
 	(set: any) => ({
 		homeStayList: [],
-		updateHomestayList: (homeStayList: Room[]) =>
+		updateHomestayList: (homeStayList: TRoom[]) =>
 			set(() => ({ homeStayList })),
 	})
 )

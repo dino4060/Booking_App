@@ -1,11 +1,11 @@
-import { Room } from "./Room"
+import { TRoom } from "./Room"
 
 export interface Booking {
 	__v: number
 	_id: string
 	created_at: string
 	end_date: string
-	room: Room
+	room: TRoom
 	room_id: string
 	start_date: string
 	total: number

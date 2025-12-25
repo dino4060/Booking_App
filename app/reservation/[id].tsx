@@ -24,7 +24,7 @@ import Animated, {
 
 import { BookingAPI } from "@/api/BookingAPI"
 import { RoomAPI } from "@/api/RoomAPI"
-import { Room } from "@/interface/Room"
+import { TRoom } from "@/interface/Room"
 import { getValueSecureStore } from "@/store/SecureStore"
 import { formatPriceVND } from "@/utils/number.util"
 import { UtilFunction } from "@/utils/utilFunction"
@@ -38,7 +38,7 @@ const DetailPage = () => {
 	const { id } = useLocalSearchParams()
 	const [openCard, setOpenCard] = useState(1)
 	const router = useRouter()
-	const [homeStay, setHomeStay] = useState<Room>()
+	const [homeStay, setHomeStay] = useState<TRoom>()
 	const [dateRange, setDateRange] = useState({
 		startDate: "",
 		endDate: "",
@@ -58,7 +58,7 @@ const DetailPage = () => {
 		const getRoom = async (id: number) => {
 			const res = await RoomAPI.getRoom(id)
 			if (res.success == false) return
-			setHomeStay(res.data || ({} as Room))
+			setHomeStay(res.data || ({} as TRoom))
 			setBookedDates(res.data.bookedDates)
 		}
 

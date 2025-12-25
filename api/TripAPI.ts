@@ -3,17 +3,12 @@ import {
 	TApiResFail,
 	TApiResSuccess,
 } from "@/interface/Base"
-import {
-	TripStatusMap,
-	TTrip,
-	TTripStatus,
-} from "@/interface/Trip"
+import { TripStatusMap, TTrip } from "@/interface/Trip"
 import { axiosClient } from "./AxiosClient"
 
 export const TripAPI = {
 	cancelTrip: async (token: string, tripId: number) => {
 		try {
-			const status: TTripStatus = "CANCELED"
 			const response = await axiosClient.patch(
 				"/api/trips",
 				{

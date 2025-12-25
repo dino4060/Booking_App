@@ -1,11 +1,9 @@
-import { User } from "react-native-gifted-chat"
-import { Room } from "./Room"
+import { TRoomShort } from "./Room"
 
-export interface Wishlist {
-	__v: number
-	_id: string
-	room: Room
-	room_id: string
-	user: User
-	user_id: string
+export type TLikedRoom = {
+	_id: number
+	createdAt: string
+	updatedAt: string
+	isDeleted: boolean
+	room: TRoomShort
 }

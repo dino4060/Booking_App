@@ -1,5 +1,5 @@
 import Colors from "@/constants/Colors"
-import { Room } from "@/interface/Room"
+import { TRoom } from "@/interface/Room"
 import { Host } from "@/interface/User"
 import { Ionicons } from "@expo/vector-icons"
 import {
@@ -82,7 +82,7 @@ const DetailPage = () => {
 		// router.push(`/message/${roomID}`);
 	}
 
-	const renderRow: ListRenderItem<Room> = ({ item }) => (
+	const renderRow: ListRenderItem<TRoom> = ({ item }) => (
 		<Link href={`/listing/${item._id}`} asChild>
 			<TouchableOpacity>
 				<Animated.View

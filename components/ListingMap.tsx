@@ -1,6 +1,6 @@
 import LocationAPI from "@/api/LocationAPI"
 import { DMS } from "@/interface/common"
-import { Room } from "@/interface/Room"
+import { TRoom } from "@/interface/Room"
 import { Ionicons } from "@expo/vector-icons"
 import { useRouter } from "expo-router"
 import React, { useRef, useState } from "react"
@@ -33,7 +33,7 @@ const ListingMap = ({ listings }: Props) => {
 	const [searchDestination, setSearchDestination] =
 		useState<string>("")
 
-	const onMarkSelected = (mark: Room) => {
+	const onMarkSelected = (mark: TRoom) => {
 		router.push(`/listing/${mark.id}`)
 	}
 
@@ -97,7 +97,7 @@ const ListingMap = ({ listings }: Props) => {
 				renderCluster={renderCluster}
 				initialRegion={INITIAL_REGION_VIETNAM}
 			>
-				{listings.map((r: Room, i: number) => {
+				{listings.map((r: TRoom, i: number) => {
 					return (
 						<Marker
 							onPress={() => onMarkSelected(r)}

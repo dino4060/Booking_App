@@ -1,6 +1,86 @@
+import { InternetException } from "@/assets/data/default"
+import {
+	TApiResFail,
+	TApiResSuccess,
+	TPageData,
+	TPageParam,
+} from "@/interface/Base"
+import { TLikedRoom } from "@/interface/Wishlist"
 import { axiosClient } from "./AxiosClient"
 
 export const WishlistAPI = {
+	likeRoom: async (token: string, roomId: number) => {
+		try {
+			const response = await axiosClient.post(
+				`/api/wish-lists/rooms/${roomId}`,
+				{},
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			)
+			return response.data as TApiResSuccess<{}>
+		} catch (error: any) {
+			if (error.response) {
+				return error.response.data as TApiResFail
+			}
+			return InternetException
+		}
+	},
+
+	unlikeRoom: async (token: string, roomId: number) => {
+		try {
+			const response = await axiosClient.delete(
+				`/api/wish-lists/rooms/${roomId}`,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			)
+			return response.data as TApiResSuccess<{}>
+		} catch (error: any) {
+			if (error.response) {
+				return error.response.data as TApiResFail
+			}
+			return InternetException
+		}
+	},
+
+	paginateRooms: async (
+		token: string,
+		params?: Partial<TPageParam>
+	) => {
+		try {
+			const response = await axiosClient.get(
+				"/api/wish-lists/rooms",
+				{
+					params: {
+						page: params?.page ?? 1,
+						size: params?.size ?? 10,
+						sort: params?.sort ?? "id",
+						direction: params?.direction ?? "DESC",
+					},
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			)
+			return response.data as TApiResSuccess<
+				TPageData<TLikedRoom>
+			>
+		} catch (error: any) {
+			if (error.response) {
+				return error.response.data as TApiResFail
+			}
+			return InternetException
+		}
+	},
+
 	getWishListByUserId: async (
 		user_id: string,
 		token: string
